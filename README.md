@@ -8,7 +8,7 @@
 
 This package aims to provide lightweight utilities that can be used to ensure that primitives are well validated and trusted for usage by auth providers. 
 
-### Roadmap 
+## Roadmap 
 
 This package is currently a work in progress. Those are the features ordered by priority: 
 
@@ -16,3 +16,15 @@ This package is currently a work in progress. Those are the features ordered by 
 - [ ] SAML response validator
 - [ ] SAML logout request validator 
 - [ ] SAML logout response validator 
+
+## Getting started 
+
+The package can be installed by adding `shin` to your list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:shin, "~> 0.1.0"}
+  ]
+end
+```
