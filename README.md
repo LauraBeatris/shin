@@ -19,7 +19,7 @@ Work in progress. Those are the features ordered by priority:
 
 ## Getting started 
 
-The package can be installed by adding `shin` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `shin_auth` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
