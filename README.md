@@ -10,7 +10,7 @@ This package aims to provide lightweight utilities that can be used to ensure th
 
 ## Roadmap 
 
-This package is currently a work in progress. Those are the features ordered by priority: 
+Work in progress. Those are the features ordered by priority: 
 
 - [ ] OIDC discovery endpoint validator 
 - [ ] SAML response validator
@@ -24,7 +24,7 @@ The package can be installed by adding `shin` to your list of dependencies in `m
 ```elixir
 def deps do
   [
-    {:shin, "~> 0.1.0"}
+    {:shin_auth, "~> 0.1.0"}
   ]
 end
 ```
