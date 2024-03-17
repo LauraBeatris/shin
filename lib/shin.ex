@@ -1,18 +1,5 @@
 defmodule Shin do
   @moduledoc """
-  Documentation for `Shin`.
+  A collection of lightweight auth utilities for Elixir.
   """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Shin.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
 end
