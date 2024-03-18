@@ -37,20 +37,11 @@ defmodule ShinAuth.OIDC do
     URI.merge(".well-known/openid-configuration", issuer)
   end
 
-  # defp fetch_discovery_data(issuer) do
-  #   Req.get(issuer)
-  #   |> case do
-  #     {:ok, %Req.Response{status: 200, body: body}} -> {:ok, body}
-  #     {:ok, _} -> {:error, "An error occurred while fetching the discovery document."}
-  #     {:error, _} -> {:error, "An error occurred while fetching the discovery document."}
-  #   end
-  # end
-
   defp fetch_discovery_data(issuer) do
     Req.get(issuer)
     |> case do
       {:ok, %Req.Response{status: 200, body: body}} ->
-        {:ok, struct(ShinAuth.OIDC.ProviderConfiguration, body)}
+        {:ok, parse_discovery_data(body)}
 
       {:ok, _} ->
         {:error, "An error occurred while fetching the discovery document."}
@@ -58,5 +49,18 @@ defmodule ShinAuth.OIDC do
       {:error, _} ->
         {:error, "An error occurred while fetching the discovery document."}
     end
+  end
+
+  defp parse_discovery_data(raw_json) do
+    struct(
+      ShinAuth.OIDC.ProviderConfiguration,
+      raw_json
+      |> Enum.map(fn {key, value} ->
+        {key
+         |> to_string()
+         |> Macro.underscore()
+         |> String.to_atom(), value}
+      end)
+    )
   end
 end
