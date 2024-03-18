@@ -4,25 +4,21 @@ defmodule ShinAuth.OIDC do
   """
 
   @doc """
-  Validates the discovery document of an OIDC provider according to
+  Validates provider configuration according to
   the [OpenID Connect Discovery 1.0 spec](https://openid.net/specs/openid-connect-discovery-1_0.html).
   """
 
-  # TODO - Add typespec + doctests
-  #
-  # @spec validate_provider_configuration(
-  #   issuer :: :uri_string.uri_string()
-  # ) ::
-  #   {:ok, {configuration :: t(), expiry :: pos_integer()}}
-  #   | {:error, :validate_provider_configuration.error()}
-
+  # TODO - Update typespec with config struct and errors
+  @spec validate_provider_configuration(issuer :: :uri_string.uri_string()) ::
+          {:ok, any()}
+          | {:error, any()}
   def validate_provider_configuration(issuer)
       when is_binary(issuer) do
     case parse_issuer_uri(issuer) do
       {:ok, uri} ->
         uri
         |> get_discovery_url()
-        |> fetch_issuer()
+        |> fetch_discovery_data()
 
       error ->
         error
@@ -31,8 +27,8 @@ defmodule ShinAuth.OIDC do
 
   def parse_issuer_uri(issuer) do
     case URI.parse(issuer) do
-      %URI{scheme: nil} -> {:error, "No URI scheme"}
-      %URI{host: nil} -> {:error, "No URI host"}
+      %URI{scheme: nil} -> {:error, "Malformed issuer. No URI scheme."}
+      %URI{host: nil} -> {:error, "Malformed issuer. No URI host"}
       uri -> {:ok, uri}
     end
   end
@@ -41,9 +37,12 @@ defmodule ShinAuth.OIDC do
     URI.merge(".well-known/openid-configuration", issuer)
   end
 
-  defp fetch_issuer(issuer) do
-    # TODO - Verify if issuer is reachable
-
-    {:ok, issuer}
+  defp fetch_discovery_data(issuer) do
+    Req.get(issuer)
+    |> case do
+      {:ok, %Req.Response{status: 200, body: body}} -> {:ok, body}
+      {:ok, _} -> {:error, "An error occurred while fetching the discovery document."}
+      {:error, _} -> {:error, "An error occurred while fetching the discovery document."}
+    end
   end
 end
