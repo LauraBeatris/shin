@@ -3,9 +3,9 @@ defmodule ShinTest do
 
   doctest ShinAuth
 
-  alias ShinAuth.OIDC.ProviderConfiguration
+  alias ShinAuth.OIDC.ProviderConfiguration.Metadata
 
-  @provider_configuration %{
+  @metadata %{
     "issuer" => "https://valid-issuer.com",
     "authorization_endpoint" => "https://valid-authorization-endpoint.com"
   }
@@ -32,10 +32,10 @@ defmodule ShinTest do
     context "when successfully fetching discovery data" do
       it "returns parsed provider configuration" do
         Req.Test.stub(ShinAuth.OIDC, fn conn ->
-          Req.Test.json(conn, @provider_configuration)
+          Req.Test.json(conn, @metadata)
         end)
 
-        {:ok, %ProviderConfiguration{issuer: "https://valid-issuer.com"}} =
+        {:ok, %Metadata{issuer: "https://valid-issuer.com"}} =
           ShinAuth.OIDC.validate_provider_configuration("https://valid-issuer.com")
       end
     end

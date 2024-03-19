@@ -3,7 +3,7 @@ defmodule ShinAuth.OIDC do
   OpenID Connect utilities.
   """
 
-  alias ShinAuth.OIDC.ProviderConfiguration
+  alias ShinAuth.OIDC.ProviderConfiguration.Metadata
 
   @doc """
   Validates provider configuration according to
@@ -13,7 +13,7 @@ defmodule ShinAuth.OIDC do
   # TODO: Improve flow-control
   # TODO: Move provider configuration functions to separate module
   @spec validate_provider_configuration(issuer :: :uri_string.uri_string()) ::
-          {:ok, ProviderConfiguration.t()}
+          {:ok, Metadata.t()}
           | {:error, any()}
   def validate_provider_configuration(issuer)
       when is_binary(issuer) do
@@ -70,7 +70,7 @@ defmodule ShinAuth.OIDC do
 
   defp parse_discovery_data(raw_json) do
     struct(
-      ProviderConfiguration,
+      Metadata,
       raw_json
       |> Enum.map(fn {key, value} ->
         {key
@@ -82,13 +82,13 @@ defmodule ShinAuth.OIDC do
   end
 
   defp fetch_authorization_endpoint(
-         provider_configuration = %ProviderConfiguration{
+         provider_configuration = %Metadata{
            authorization_endpoint: authorization_endpoint
          }
        ) do
     reach_endpoint(authorization_endpoint, :get)
     |> case do
-      {:ok, %Req.Response{status: 200}} ->
+      {:ok, _} ->
         {:ok, provider_configuration}
 
       {:error, _} ->
@@ -97,21 +97,13 @@ defmodule ShinAuth.OIDC do
     end
   end
 
-  # TODO: Configure headers, timeout, guards for get and post
-  defp reach_endpoint(base_url, method) when method in [:get, :post] do
-    request =
-      [
-        base_url: base_url
-      ]
-      |> Keyword.merge(Application.get_env(:shin_auth, :oidc_is_endpoint_reachable_req, []))
-      |> Req.new(
-        headers: [{"accept", "application/json"}, {"content-type", "application/json"}],
-        method: method
-      )
-
-    case request[:method] do
-      :get -> Req.get(request)
-      :post -> Req.post(request)
-    end
+  defp reach_endpoint(base_url, :get) do
+    [
+      base_url: base_url,
+      headers: [{"accept", "application/json"}, {"content-type", "application/json"}],
+      method: :get
+    ]
+    |> Keyword.merge(Application.get_env(:shin_auth, :oidc_is_endpoint_reachable_req, []))
+    |> Req.request()
   end
 end

@@ -1,4 +1,4 @@
-defmodule ShinAuth.OIDC.ProviderConfiguration do
+defmodule ShinAuth.OIDC.ProviderConfiguration.Metadata do
   @moduledoc """
   OpenID Connect Provider Configuration
 
