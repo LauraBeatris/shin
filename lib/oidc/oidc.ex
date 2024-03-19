@@ -15,19 +15,12 @@ defmodule ShinAuth.OIDC do
           | {:error, any()}
   def validate_provider_configuration(issuer)
       when is_binary(issuer) do
-    discovery_data =
-      case get_discovery_endpoint(issuer) do
-        {:ok, url} ->
-          fetch_discovery_data(url)
+    case fetch_discovery_metadata(issuer) do
+      {:ok, provider_configuration} ->
+        provider_configuration |> reach_authorization_endpoint
 
-        error ->
-          error
-      end
-
-    with {:ok, provider_configuration} <- discovery_data do
-      provider_configuration |> fetch_authorization_endpoint
-    else
-      error -> error
+      {:error, _} = error ->
+        error
     end
   end
 end
