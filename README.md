@@ -17,6 +17,10 @@ Work in progress. Those are the features ordered by priority:
 - [ ] SAML logout request validator 
 - [ ] SAML logout response validator 
 
+Infra:
+
+- [ ] Configure CI for tests 
+
 ## Getting started 
 
 The package can be installed by adding `shin_auth` to your list of dependencies in `mix.exs`:

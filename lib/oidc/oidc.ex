@@ -3,14 +3,15 @@ defmodule ShinAuth.OIDC do
   OpenID Connect utilities.
   """
 
+  alias ShinAuth.OIDC.ProviderConfiguration
+
   @doc """
   Validates provider configuration according to
   the [OpenID Connect Discovery 1.0 spec](https://openid.net/specs/openid-connect-discovery-1_0.html).
   """
-
   # TODO - Update typespec with config struct and errors
   @spec validate_provider_configuration(issuer :: :uri_string.uri_string()) ::
-          {:ok, any()}
+          {:ok, ProviderConfiguration.t()}
           | {:error, any()}
   def validate_provider_configuration(issuer)
       when is_binary(issuer) do
@@ -25,7 +26,7 @@ defmodule ShinAuth.OIDC do
     end
   end
 
-  def parse_issuer_uri(issuer) do
+  defp parse_issuer_uri(issuer) do
     case URI.parse(issuer) do
       %URI{scheme: nil} -> {:error, "Malformed issuer. No URI scheme."}
       %URI{host: nil} -> {:error, "Malformed issuer. No URI host"}
@@ -38,7 +39,11 @@ defmodule ShinAuth.OIDC do
   end
 
   defp fetch_discovery_data(issuer) do
-    Req.get(issuer)
+    [
+      base_url: issuer
+    ]
+    |> Keyword.merge(Application.get_env(:shin_auth, :oidc_discovery_data_req_options, []))
+    |> Req.request()
     |> case do
       {:ok, %Req.Response{status: 200, body: body}} ->
         {:ok, parse_discovery_data(body)}
@@ -53,7 +58,7 @@ defmodule ShinAuth.OIDC do
 
   defp parse_discovery_data(raw_json) do
     struct(
-      ShinAuth.OIDC.ProviderConfiguration,
+      ProviderConfiguration,
       raw_json
       |> Enum.map(fn {key, value} ->
         {key
