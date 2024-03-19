@@ -5,6 +5,11 @@ defmodule ShinTest do
 
   alias ShinAuth.OIDC.ProviderConfiguration
 
+  @provider_configuration %{
+    "issuer" => "https://valid-issuer.com",
+    "authorization_endpoint" => "https://valid-authorization-endpoint.com"
+  }
+
   describe "validate_provider_configuration" do
     context "with invalid issuer" do
       it "returns error" do
@@ -27,7 +32,7 @@ defmodule ShinTest do
     context "when successfully fetching discovery data" do
       it "returns parsed provider configuration" do
         Req.Test.stub(ShinAuth.OIDC, fn conn ->
-          Req.Test.json(conn, %{"issuer" => "https://valid-issuer.com"})
+          Req.Test.json(conn, @provider_configuration)
         end)
 
         {:ok, %ProviderConfiguration{issuer: "https://valid-issuer.com"}} =
