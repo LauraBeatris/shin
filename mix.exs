@@ -39,8 +39,8 @@ defmodule Shin.MixProject do
     [
       {:ex_doc, "~> 0.31", only: :dev, runtime: false},
       {:ex_spec, "~> 2.0", only: :test},
-      {:req, "~> 0.4.0"},
-      {:plug, "~> 1.0"}
+      {:mox, "~> 1.0", only: :test},
+      {:req, "~> 0.4.0"}
     ]
   end
 end

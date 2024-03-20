@@ -18,7 +18,7 @@ defmodule ShinAuth.OIDC.ProviderConfiguration do
       [
         base_url: discovery_endpoint
       ]
-      |> Keyword.merge(Application.get_env(:shin_auth, :oidc_discovery_data_req_options, []))
+      |> Keyword.merge(Application.get_env(:shin_auth, :oidc_discovery_metadata_req_options, []))
       |> Req.request()
       |> case do
         {:ok, %Req.Response{status: 200, body: body}} ->
@@ -41,7 +41,15 @@ defmodule ShinAuth.OIDC.ProviderConfiguration do
           authorization_endpoint: authorization_endpoint
         }
       ) do
-    reach_endpoint(authorization_endpoint, :get)
+    [
+      base_url: authorization_endpoint,
+      headers: [{"accept", "application/json"}, {"content-type", "application/json"}],
+      method: :get
+    ]
+    |> Keyword.merge(
+      Application.get_env(:shin_auth, :oidc_authorization_endpoint_req_options, [])
+    )
+    |> Req.request()
     |> case do
       {:ok, _} ->
         {:ok, provider_configuration}
@@ -52,6 +60,7 @@ defmodule ShinAuth.OIDC.ProviderConfiguration do
     end
   end
 
+  # TODO: Perform further validation on the issuer URL or directly receive discovery URL
   defp get_discovery_endpoint(issuer) do
     parsed_issuer =
       case URI.parse(issuer) do
@@ -80,15 +89,5 @@ defmodule ShinAuth.OIDC.ProviderConfiguration do
          |> String.to_atom(), value}
       end)
     )
-  end
-
-  defp reach_endpoint(base_url, :get) do
-    [
-      base_url: base_url,
-      headers: [{"accept", "application/json"}, {"content-type", "application/json"}],
-      method: :get
-    ]
-    |> Keyword.merge(Application.get_env(:shin_auth, :oidc_reach_metadata_endpoint_req, []))
-    |> Req.request()
   end
 end

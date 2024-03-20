@@ -6,11 +6,6 @@ defmodule ShinTest do
   alias ShinAuth.OIDC
   alias ShinAuth.OIDC.ProviderConfiguration.Metadata
 
-  @metadata %{
-    "issuer" => "https://valid-issuer.com",
-    "authorization_endpoint" => "https://valid-authorization-endpoint.com"
-  }
-
   describe "validate_provider_configuration" do
     context "with invalid issuer" do
       it "returns error" do
@@ -19,25 +14,17 @@ defmodule ShinTest do
       end
     end
 
-    context "when failing to fetch discovery data" do
+    context "when the discovery metadata endpoint is unreachable" do
       it "returns error" do
-        Req.Test.stub(OIDC.ProviderConfiguration, fn conn ->
-          Plug.Conn.send_resp(conn, 403, "Forbidden")
-        end)
-
         {:error, "An error occurred while fetching the discovery document."} =
-          OIDC.validate_provider_configuration("https://valid-issuer.com")
+          OIDC.validate_provider_configuration("https://example.com")
       end
     end
 
-    context "when successfully fetching discovery data" do
+    context "when the discovery metadata endpoint is reachable and has valid content" do
       it "returns parsed provider configuration" do
-        Req.Test.stub(OIDC.ProviderConfiguration, fn conn ->
-          Req.Test.json(conn, @metadata)
-        end)
-
-        {:ok, %Metadata{issuer: "https://valid-issuer.com"}} =
-          OIDC.validate_provider_configuration("https://valid-issuer.com")
+        {:ok, %Metadata{issuer: "https://example.com"}} =
+          OIDC.validate_provider_configuration("https://example.com")
       end
     end
   end
