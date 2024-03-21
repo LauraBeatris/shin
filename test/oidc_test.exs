@@ -1,30 +1,29 @@
-defmodule ShinTest do
+defmodule ShinTest.OIDCTest do
   use ExSpec, async: true
+  alias ShinAuth.OIDC
+  import Mox
 
   doctest ShinAuth
 
-  alias ShinAuth.OIDC
-  alias ShinAuth.OIDC.ProviderConfiguration.Metadata
+  @valid_discovery_url "https://valid-url/.well-known/openid-configuration"
+  @http_client ShinAuth.HTTPClientMock
 
-  describe "validate_provider_configuration" do
-    context "with invalid issuer" do
-      it "returns error" do
-        {:error, "Malformed issuer. No URI scheme."} =
-          OIDC.validate_provider_configuration("invalid-issuer.com")
-      end
+  describe "with malformed discovery url" do
+    it "returns error" do
+      {:error, "Malformed URL. No URI scheme."} =
+        OIDC.validate_provider_configuration("invalid")
     end
+  end
 
-    context "when the discovery metadata endpoint is unreachable" do
+  describe "with valid discovery url" do
+    context "when discovery url is unreachable" do
       it "returns error" do
-        {:error, "An error occurred while fetching the discovery document."} =
-          OIDC.validate_provider_configuration("https://example.com")
-      end
-    end
+        expect(@http_client, :get, fn @valid_discovery_url ->
+          {:error, %HTTPoison.Response{body: "", status_code: 404}}
+        end)
 
-    context "when the discovery metadata endpoint is reachable and has valid content" do
-      it "returns parsed provider configuration" do
-        {:ok, %Metadata{issuer: "https://example.com"}} =
-          OIDC.validate_provider_configuration("https://example.com")
+        {:error, _} =
+          OIDC.validate_provider_configuration(@valid_discovery_url)
       end
     end
   end

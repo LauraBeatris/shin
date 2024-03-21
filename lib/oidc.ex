@@ -6,42 +6,42 @@ defmodule ShinAuth.OIDC do
   alias ShinAuth.OIDC.ProviderConfiguration.Metadata
   import ShinAuth.OIDC.ProviderConfiguration
 
-  @discovery_metadata_url_path ".well-known/openid-configuration"
+  @discovery_url_path ".well-known/openid-configuration"
 
   @doc """
   Validates provider configuration according to
   the [OpenID Connect Discovery 1.0 spec](https://openid.net/specs/openid-connect-discovery-1_0.html).
   """
-  @spec validate_provider_configuration(discovery_metadata_url :: :uri_string.uri_string()) ::
+  @spec validate_provider_configuration(discovery_url :: :uri_string.uri_string()) ::
           {:ok, Metadata.t()}
           | {:error, any()}
-  def validate_provider_configuration(discovery_metadata_url)
-      when is_binary(discovery_metadata_url) do
-    case validate_discovery_metadata_url(discovery_metadata_url) do
+  def validate_provider_configuration(discovery_url)
+      when is_binary(discovery_url) do
+    case validate_discovery_url(discovery_url) do
       {:ok, _} ->
-        get_discovery_metadata(discovery_metadata_url)
+        fetch_discovery_metadata(discovery_url)
 
       error ->
         error
     end
   end
 
-  defp validate_discovery_metadata_url(discovery_metadata_url)
-       when is_binary(discovery_metadata_url) do
-    case URI.parse(discovery_metadata_url) do
-      %URI{scheme: nil} -> {:error, "Malformed issuer. No URI scheme."}
-      %URI{host: nil} -> {:error, "Malformed issuer. No URI host"}
-      _ -> {:ok, append_discovery_metadata_path(discovery_metadata_url)}
+  defp validate_discovery_url(discovery_url)
+       when is_binary(discovery_url) do
+    case URI.parse(discovery_url) do
+      %URI{scheme: nil} -> {:error, "Malformed URL. No URI scheme."}
+      %URI{host: nil} -> {:error, "Malformed URL. No URI host"}
+      _ -> {:ok, append_discovery_path(discovery_url)}
     end
   end
 
-  defp append_discovery_metadata_path(discovery_metadata_url) do
-    case String.ends_with?(discovery_metadata_url, @discovery_metadata_url_path) do
+  defp append_discovery_path(discovery_url) do
+    case String.ends_with?(discovery_url, @discovery_url_path) do
       true ->
-        discovery_metadata_url
+        discovery_url
 
       false ->
-        "#{String.trim_trailing(discovery_metadata_url, "/")}/#{@discovery_metadata_url_path}"
+        "#{String.trim_trailing(discovery_url, "/")}/#{@discovery_url_path}"
     end
   end
 end
