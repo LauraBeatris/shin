@@ -8,6 +8,8 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Metadata do
   * https://openid.net/specs/openid-connect-rpinitiated-1_0.html#OPMetadata
   """
 
+  @derive [Poison.Encoder]
+
   defstruct [
     :issuer,
     :authorization_endpoint,
