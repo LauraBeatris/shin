@@ -4,8 +4,15 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
   alias ShinAuth.OIDC.ProviderConfiguration.Metadata
 
   def process_response_body(body) do
-    body
-    |> Poison.decode!(as: %Metadata{})
-    |> Enum.map(fn {k, v} -> {String.to_atom(k), v} end)
+    struct(
+      Metadata,
+      Poison.decode!(body)
+      |> Enum.map(fn {key, value} ->
+        {key
+         |> to_string()
+         |> Macro.underscore()
+         |> String.to_atom(), value}
+      end)
+    )
   end
 end
