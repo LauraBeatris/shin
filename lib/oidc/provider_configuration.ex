@@ -1,10 +1,11 @@
 defmodule ShinAuth.OIDC.ProviderConfiguration do
   alias ShinAuth.OIDC.ProviderConfiguration.Metadata
+  alias ShinAuth.OIDC.ProviderConfiguration.Error
 
-  def fetch_discovery_metadata(discovery_url, config \\ default_config()) do
+  def fetch_discovery_metadata(discovery_endpoint, config \\ default_config()) do
     http_client = Keyword.get(config, :http_client)
 
-    discovery_url
+    discovery_endpoint
     |> http_client.get()
     |> handle_discovery_metadata()
   end
@@ -22,7 +23,10 @@ defmodule ShinAuth.OIDC.ProviderConfiguration do
     )
   end
 
-  defp handle_discovery_metadata(_), do: {:error, "Something went wrong"}
+  defp handle_discovery_metadata(_),
+    do:
+      {:error,
+       %Error{tag: :discovery_unreachable, severity: :error, message: ~c"URL is unreachable."}}
 
   defp default_config(), do: Application.get_env(:shin_auth, :provider_configuration_fetcher)
 end
