@@ -20,10 +20,19 @@ defmodule ShinAuth.OIDC do
       when is_binary(discovery_endpoint) do
     case validate_discovery_endpoint(discovery_endpoint) do
       {:ok, _} ->
-        fetch_discovery_metadata(discovery_endpoint)
+        validate_discovery_metadata(discovery_endpoint)
 
       error ->
         error
+    end
+  end
+
+  defp validate_discovery_metadata(discovery_endpoint) do
+    validation_result = discovery_endpoint |> fetch_discovery_metadata
+
+    case validation_result do
+      {:error, _} = error -> error
+      {:ok, _} = parsed_metadata -> parsed_metadata
     end
   end
 
@@ -35,7 +44,7 @@ defmodule ShinAuth.OIDC do
          %Error{
            severity: :error,
            tag: :malformed_discovery_endpoint,
-           message: "Malformed URL. No URI scheme."
+           message: "Discovery endpoint has no URI scheme"
          }}
 
       %URI{host: nil} ->
@@ -43,7 +52,7 @@ defmodule ShinAuth.OIDC do
          %Error{
            severity: :error,
            tag: :malformed_discovery_endpoint,
-           message: "Malformed URL. No URI host."
+           message: "Discovery endpoint has no URI host"
          }}
 
       _ ->
