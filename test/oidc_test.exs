@@ -17,16 +17,24 @@ defmodule ShinTest.OIDCTest do
     |> File.read!()
   end
 
-  defp mock_discovery_content(%{with_discovery: with_discovery}) do
-    if with_discovery do
-      expect(@http_client, :get, fn @valid_discovery_endpoint ->
+  defp mock_discovery_content(%{
+         with_discovery: with_discovery,
+         with_authorization: with_authorization
+       }) do
+    expect(@http_client, :get, fn
+      @valid_discovery_endpoint when with_discovery ->
         {:ok, %HTTPoison.Response{body: get_json("valid_discovery_metadata"), status_code: 200}}
-      end)
-    else
-      expect(@http_client, :get, fn @valid_discovery_endpoint ->
+
+      "https://foo-corp-sandbox.idp-example.com/oauth2/v1/authorize" when with_authorization ->
+        {:ok, %HTTPoison.Response{body: "Invalid 'client_id' parameter value", status_code: 400}}
+
+      @valid_discovery_endpoint ->
         {:error, %HTTPoison.Response{body: "", status_code: 500}}
-      end)
-    end
+
+      "https://foo-corp-sandbox.idp-example.com/oauth2/v1/authorize" ->
+        {:error,
+         %HTTPoison.Response{body: "Authorization endpoint unreachable", status_code: 500}}
+    end)
   end
 
   describe "with malformed discovery endpoint" do
@@ -44,7 +52,8 @@ defmodule ShinTest.OIDCTest do
   describe "when discovery endpoint is unreachable" do
     it "returns error" do
       mock_discovery_content(%{
-        with_discovery: false
+        with_discovery: false,
+        with_authorization: false
       })
 
       {:error,
@@ -60,11 +69,24 @@ defmodule ShinTest.OIDCTest do
   describe "when discovery endpoint is reachable" do
     it "returns parsed discovery metadata" do
       mock_discovery_content(%{
-        with_discovery: true
+        with_discovery: true,
+        with_authorization: true
       })
 
       {:ok, %Metadata{issuer: "https://foo-corp-sandbox.idp-example.com"}} =
         OIDC.load_provider_configuration(@valid_discovery_endpoint)
+    end
+
+    context "with unreachable authorization endpoint" do
+      it "returns error" do
+        mock_discovery_content(%{
+          with_discovery: true,
+          with_authorization: false
+        })
+
+        {:error, _} =
+          OIDC.load_provider_configuration(@valid_discovery_endpoint)
+      end
     end
   end
 end

@@ -14,8 +14,6 @@ Work in progress. Those are the features ordered by priority:
 
 - [ ] OIDC discovery endpoint validator 
 - [ ] SAML response validator
-- [ ] SAML logout request validator 
-- [ ] SAML logout response validator 
 
 Infra:
 

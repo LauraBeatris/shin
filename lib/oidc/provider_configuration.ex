@@ -33,5 +33,40 @@ defmodule ShinAuth.OIDC.ProviderConfiguration do
          message: "Discovery endpoint is unreachable"
        }}
 
+  def fetch_authorization_endpoint(
+        %Metadata{authorization_endpoint: authorization_endpoint} = metadata,
+        config \\ default_config()
+      )
+      when is_binary(authorization_endpoint) do
+    http_client = Keyword.get(config, :http_client)
+
+    response = authorization_endpoint |> http_client.get()
+
+    case response do
+      {:ok, %HTTPoison.Response{body: _body, status_code: 400}} ->
+        {:ok, metadata}
+
+      {:ok, %HTTPoison.Response{body: _body, status_code: 200}} ->
+        {:ok, metadata}
+
+      {:ok, %HTTPoison.Response{body: _body, status_code: _}} ->
+        {:error,
+         {:error,
+          %Error{
+            tag: :authorization_endpoint_unreachable,
+            severity: :error,
+            message: "Authorization endpoint is unreachable"
+          }}}
+
+      {:error, _} ->
+        {:error,
+         %Error{
+           tag: :authorization_endpoint_unreachable,
+           severity: :error,
+           message: "Authorization endpoint is unreachable"
+         }}
+    end
+  end
+
   defp default_config(), do: Application.get_env(:shin_auth, :provider_configuration_fetcher)
 end

@@ -20,21 +20,24 @@ defmodule ShinAuth.OIDC do
       when is_binary(discovery_endpoint) do
     case validate_discovery_endpoint(discovery_endpoint) do
       {:ok, _} ->
-        validate_discovery_metadata(discovery_endpoint)
+        discovery_endpoint |> fetch_discovery_metadata() |> validate_discovery_metadata()
 
       error ->
         error
     end
   end
 
-  defp validate_discovery_metadata(discovery_endpoint) do
-    validation_result = discovery_endpoint |> fetch_discovery_metadata
+  defp validate_discovery_metadata({:ok, metadata}) do
+    validation_result =
+      metadata |> fetch_authorization_endpoint
 
     case validation_result do
       {:error, _} = error -> error
       {:ok, _} = parsed_metadata -> parsed_metadata
     end
   end
+
+  defp validate_discovery_metadata({:error, _} = error), do: error
 
   defp validate_discovery_endpoint(discovery_endpoint)
        when is_binary(discovery_endpoint) do
