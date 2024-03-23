@@ -37,13 +37,16 @@ defmodule ShinTest.OIDCTest do
   end
 
   describe "when discovery endpoint is reachable" do
-    it "returns parsed discovery metadata" do
-      mock_discovery_metadata(:reachable)
-      mock_authorization_endpoint(:reachable)
-      mock_jwks_uri(:reachable)
+    context "with valid metadata" do
+      it "returns parsed metadata" do
+        mock_discovery_metadata(:reachable)
+        mock_authorization_endpoint(:reachable)
+        mock_jwks_uri(:reachable)
+        mock_token_endpoint(:reachable)
 
-      {:ok, %Metadata{issuer: "https://foo-corp-sandbox.idp-example.com"}} =
-        OIDC.load_provider_configuration(@valid_discovery_endpoint)
+        {:ok, %Metadata{issuer: "https://foo-corp-sandbox.idp-example.com"}} =
+          OIDC.load_provider_configuration(@valid_discovery_endpoint)
+      end
     end
 
     context "with unreachable authorization endpoint" do
@@ -84,6 +87,22 @@ defmodule ShinTest.OIDCTest do
          %Error{
            tag: :jwks_uri_unreachable,
            message: "JWKS URI is unreachable"
+         }} =
+          OIDC.load_provider_configuration(@valid_discovery_endpoint)
+      end
+    end
+
+    context "with unreachable 'token_endpoint'" do
+      it "returns error" do
+        mock_discovery_metadata(:reachable)
+        mock_authorization_endpoint(:reachable)
+        mock_jwks_uri(:reachable)
+        mock_token_endpoint(:unreachable)
+
+        {:error,
+         %Error{
+           tag: :token_endpoint_unreachable,
+           message: "Token endpoint is unreachable"
          }} =
           OIDC.load_provider_configuration(@valid_discovery_endpoint)
       end
@@ -144,6 +163,20 @@ defmodule ShinTest.OIDCTest do
                  }),
                status_code: 200
              }}
+
+          :unreachable ->
+            {:ok, %HTTPoison.Response{body: "", status_code: 500}}
+        end
+    end)
+  end
+
+  defp mock_token_endpoint(status) do
+    expect(@http_client, :post, fn
+      "https://foo-corp-sandbox.idp-example.com/oauth2/v1/token", _body, _headers, _options ->
+        case status do
+          :reachable ->
+            {:ok,
+             %HTTPoison.Response{body: "Invalid 'client_id' parameter value", status_code: 400}}
 
           :unreachable ->
             {:ok, %HTTPoison.Response{body: "", status_code: 500}}

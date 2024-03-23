@@ -46,19 +46,58 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
         timeout: 5000
       )
 
+    error =
+      {:error,
+       %Error{
+         tag: :authorization_endpoint_unreachable,
+         message: "Authorization endpoint is unreachable"
+       }}
+
     case response do
-      {:ok, %HTTPoison.Response{body: _body, status_code: 400}} ->
-        {:ok, metadata}
+      {:ok, %HTTPoison.Response{body: _body, status_code: 500}} ->
+        error
 
-      {:ok, %HTTPoison.Response{body: _body, status_code: 200}} ->
-        {:ok, metadata}
+      {:error, _} ->
+        error
 
-      _ ->
-        {:error,
-         %Error{
-           tag: :authorization_endpoint_unreachable,
-           message: "Authorization endpoint is unreachable"
-         }}
+      {:ok, %HTTPoison.Response{body: _body, status_code: _}} ->
+        {:ok, metadata}
+    end
+  end
+
+  def fetch_token_endpoint({:error, _} = error), do: error
+
+  def fetch_token_endpoint(
+        {:ok, %Metadata{token_endpoint: token_endpoint} = metadata},
+        config \\ default_config()
+      )
+      when is_binary(token_endpoint) do
+    http_client = Keyword.get(config, :http_client)
+
+    response =
+      token_endpoint
+      |> http_client.post(
+        "",
+        [{"Content-Type", "application/json"}, {"Accept", "application/json"}],
+        timeout: 5000
+      )
+
+    error =
+      {:error,
+       %Error{
+         tag: :token_endpoint_unreachable,
+         message: "Token endpoint is unreachable"
+       }}
+
+    case response do
+      {:ok, %HTTPoison.Response{body: _body, status_code: 500}} ->
+        error
+
+      {:error, _} ->
+        error
+
+      {:ok, %HTTPoison.Response{body: _body, status_code: _}} ->
+        {:ok, metadata}
     end
   end
 

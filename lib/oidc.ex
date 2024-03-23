@@ -68,6 +68,7 @@ defmodule ShinAuth.OIDC do
       |> fetch_authorization_endpoint
       |> validate_issuer_attribute
       |> fetch_jwks_uri
+      |> fetch_token_endpoint
 
     case validation_result do
       {:ok, _} = parsed_metadata -> parsed_metadata
