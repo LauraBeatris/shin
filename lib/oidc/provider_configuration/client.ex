@@ -1,4 +1,4 @@
-defmodule ShinAuth.OIDC.ProviderConfiguration do
+defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
   alias ShinAuth.OIDC.ProviderConfiguration.Metadata
   alias ShinAuth.OIDC.ProviderConfiguration.Error
 
@@ -29,7 +29,6 @@ defmodule ShinAuth.OIDC.ProviderConfiguration do
       {:error,
        %Error{
          tag: :discovery_endpoint_unreachable,
-         severity: :error,
          message: "Discovery endpoint is unreachable"
        }}
 
@@ -54,20 +53,10 @@ defmodule ShinAuth.OIDC.ProviderConfiguration do
       {:ok, %HTTPoison.Response{body: _body, status_code: 200}} ->
         {:ok, metadata}
 
-      {:ok, %HTTPoison.Response{body: _body, status_code: _}} ->
-        {:error,
-         {:error,
-          %Error{
-            tag: :authorization_endpoint_unreachable,
-            severity: :error,
-            message: "Authorization endpoint is unreachable"
-          }}}
-
-      {:error, _} ->
+      _ ->
         {:error,
          %Error{
            tag: :authorization_endpoint_unreachable,
-           severity: :error,
            message: "Authorization endpoint is unreachable"
          }}
     end

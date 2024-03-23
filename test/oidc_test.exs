@@ -16,7 +16,6 @@ defmodule ShinTest.OIDCTest do
     it "returns error" do
       {:error,
        %Error{
-         severity: :error,
          tag: :malformed_discovery_endpoint,
          message: "Discovery endpoint has no URI scheme"
        }} =
@@ -30,7 +29,6 @@ defmodule ShinTest.OIDCTest do
 
       {:error,
        %Error{
-         severity: :error,
          tag: :discovery_endpoint_unreachable,
          message: "Discovery endpoint is unreachable"
        }} =
@@ -55,48 +53,58 @@ defmodule ShinTest.OIDCTest do
         {:error,
          %Error{
            tag: :authorization_endpoint_unreachable,
-           severity: :error,
            message: "Authorization endpoint is unreachable"
+         }} =
+          OIDC.load_provider_configuration(@valid_discovery_endpoint)
+      end
+    end
+
+    context "without 'issuer' attribute" do
+      it "returns error" do
+        mock_discovery_metadata(:reachable, get_json("discovery_metadata_without_issuer"))
+        mock_authorization_endpoint(:reachable)
+
+        {:error,
+         %Error{
+           tag: :missing_issuer_attribute,
+           message: "'issuer' attribute is missing"
          }} =
           OIDC.load_provider_configuration(@valid_discovery_endpoint)
       end
     end
   end
 
-  def get_json(filename) do
+  defp get_json(filename) do
     Path.join(__DIR__, ["support/", filename <> ".json"])
     |> File.read!()
   end
 
-  defp mock_discovery_metadata(:reachable) do
+  defp mock_discovery_metadata(status, body \\ get_json("valid_discovery_metadata")) do
     expect(@http_client, :get, fn
       @valid_discovery_endpoint ->
-        {:ok, %HTTPoison.Response{body: get_json("valid_discovery_metadata"), status_code: 200}}
+        case status do
+          :reachable ->
+            {:ok, %HTTPoison.Response{body: body, status_code: 200}}
+
+          :unreachable ->
+            {:ok, %HTTPoison.Response{body: "", status_code: 500}}
+        end
     end)
   end
 
-  defp mock_discovery_metadata(:unreachable) do
-    expect(@http_client, :get, fn
-      @valid_discovery_endpoint ->
-        {:ok, %HTTPoison.Response{body: "", status_code: 500}}
-    end)
-  end
-
-  defp mock_authorization_endpoint(:reachable) do
+  defp mock_authorization_endpoint(status) do
     expect(@http_client, :get, fn
       "https://foo-corp-sandbox.idp-example.com/oauth2/v1/authorize",
       [{"Content-Type", "application/json"}, {"Accept", "application/json"}],
       [timeout: 5000] ->
-        {:ok, %HTTPoison.Response{body: "Invalid 'client_id' parameter value", status_code: 400}}
-    end)
-  end
+        case status do
+          :reachable ->
+            {:ok,
+             %HTTPoison.Response{body: "Invalid 'client_id' parameter value", status_code: 400}}
 
-  defp mock_authorization_endpoint(:unreachable) do
-    expect(@http_client, :get, fn
-      "https://foo-corp-sandbox.idp-example.com/oauth2/v1/authorize",
-      [{"Content-Type", "application/json"}, {"Accept", "application/json"}],
-      [timeout: 5000] ->
-        {:ok, %HTTPoison.Response{body: "", status_code: 500}}
+          :unreachable ->
+            {:ok, %HTTPoison.Response{body: "", status_code: 500}}
+        end
     end)
   end
 end

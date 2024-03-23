@@ -3,7 +3,8 @@ defmodule ShinAuth.OIDC do
   OpenID Connect utilities.
   """
 
-  import ShinAuth.OIDC.ProviderConfiguration
+  import ShinAuth.OIDC.ProviderConfiguration.Client
+
   alias ShinAuth.OIDC.ProviderConfiguration.Metadata
   alias ShinAuth.OIDC.ProviderConfiguration.Error
 
@@ -20,24 +21,15 @@ defmodule ShinAuth.OIDC do
       when is_binary(discovery_endpoint) do
     case validate_discovery_endpoint(discovery_endpoint) do
       {:ok, _} ->
-        discovery_endpoint |> fetch_discovery_metadata() |> validate_discovery_metadata()
+        discovery_endpoint
+        |> fetch_discovery_metadata
+        |> validate_discovery_metadata
+        |> validate_issuer_attribute
 
       error ->
         error
     end
   end
-
-  defp validate_discovery_metadata({:ok, metadata}) do
-    validation_result =
-      metadata |> fetch_authorization_endpoint
-
-    case validation_result do
-      {:error, error} -> error
-      {:ok, _} = parsed_metadata -> parsed_metadata
-    end
-  end
-
-  defp validate_discovery_metadata({:error, _} = error), do: error
 
   defp validate_discovery_endpoint(discovery_endpoint)
        when is_binary(discovery_endpoint) do
@@ -45,7 +37,6 @@ defmodule ShinAuth.OIDC do
       %URI{scheme: nil} ->
         {:error,
          %Error{
-           severity: :error,
            tag: :malformed_discovery_endpoint,
            message: "Discovery endpoint has no URI scheme"
          }}
@@ -53,7 +44,6 @@ defmodule ShinAuth.OIDC do
       %URI{host: nil} ->
         {:error,
          %Error{
-           severity: :error,
            tag: :malformed_discovery_endpoint,
            message: "Discovery endpoint has no URI host"
          }}
@@ -72,4 +62,28 @@ defmodule ShinAuth.OIDC do
         "#{String.trim_trailing(discovery_endpoint, "/")}/#{@discovery_endpoint_path}"
     end
   end
+
+  defp validate_discovery_metadata({:ok, metadata}) do
+    validation_result =
+      metadata |> fetch_authorization_endpoint
+
+    case validation_result do
+      {:ok, _} = parsed_metadata -> parsed_metadata
+      error -> error
+    end
+  end
+
+  defp validate_discovery_metadata({:error, _} = error), do: error
+
+  defp validate_issuer_attribute({:ok, %Metadata{issuer: issuer}} = parsed_metadata)
+       when is_binary(issuer),
+       do: parsed_metadata
+
+  defp validate_issuer_attribute({:ok, %Metadata{issuer: issuer}})
+       when is_nil(issuer) or not is_binary(issuer),
+       do:
+         {:error,
+          %Error{tag: :missing_issuer_attribute, message: "'issuer' attribute is missing"}}
+
+  defp validate_issuer_attribute({:error, _} = error), do: error
 end
