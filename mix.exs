@@ -55,7 +55,8 @@ defmodule Shin.MixProject do
       {:mox, "~> 1.0", only: :test},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:httpoison, "~> 2.0"},
-      {:poison, "~> 5.0"}
+      {:poison, "~> 5.0"},
+      {:saxy, "~> 1.5"}
     ]
   end
 end
