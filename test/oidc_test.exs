@@ -17,7 +17,7 @@ defmodule ShinTest.OIDCTest do
       {:error,
        %Error{
          tag: :malformed_discovery_endpoint,
-         message: "Discovery endpoint has no URI scheme"
+         message: "Discovery endpoint has no URI scheme."
        }} =
         OIDC.load_provider_configuration("invalid")
     end
@@ -30,7 +30,7 @@ defmodule ShinTest.OIDCTest do
       {:error,
        %Error{
          tag: :discovery_endpoint_unreachable,
-         message: "Discovery endpoint is unreachable"
+         message: "Discovery endpoint is unreachable. Received status code: 500."
        }} =
         OIDC.load_provider_configuration(@valid_discovery_endpoint)
     end
@@ -57,7 +57,8 @@ defmodule ShinTest.OIDCTest do
         {:error,
          %Error{
            tag: :authorization_endpoint_unreachable,
-           message: "Authorization endpoint is unreachable"
+           message:
+             "'authorization_code' is unreachable. Verify if the endpoint is structured correctly."
          }} =
           OIDC.load_provider_configuration(@valid_discovery_endpoint)
       end
@@ -71,7 +72,8 @@ defmodule ShinTest.OIDCTest do
         {:error,
          %Error{
            tag: :missing_issuer_attribute,
-           message: "'issuer' attribute is missing"
+           message:
+             "'issuer' attribute is missing. Ensure the OIDC provider supports the 'issuer' attribute."
          }} =
           OIDC.load_provider_configuration(@valid_discovery_endpoint)
       end
@@ -86,7 +88,23 @@ defmodule ShinTest.OIDCTest do
         {:error,
          %Error{
            tag: :jwks_uri_unreachable,
-           message: "JWKS URI is unreachable"
+           message: "'jwks_uri' is unreachable. Verify if the endpoint is structured correctly."
+         }} =
+          OIDC.load_provider_configuration(@valid_discovery_endpoint)
+      end
+    end
+
+    context "with malformed 'jwks_uri' response" do
+      it "returns error" do
+        mock_discovery_metadata(:reachable)
+        mock_authorization_endpoint(:reachable)
+        mock_jwks_uri(:reachable, %{"foo" => true})
+
+        {:error,
+         %Error{
+           tag: :malformed_jwks_uri_response,
+           message: "JWKS URI response is malformed.",
+           data: %{"foo" => true}
          }} =
           OIDC.load_provider_configuration(@valid_discovery_endpoint)
       end
@@ -102,7 +120,8 @@ defmodule ShinTest.OIDCTest do
         {:error,
          %Error{
            tag: :token_endpoint_unreachable,
-           message: "Token endpoint is unreachable"
+           message:
+             "'token_endpoint' is unreachable. Verify if the endpoint is structured correctly."
          }} =
           OIDC.load_provider_configuration(@valid_discovery_endpoint)
       end
@@ -143,7 +162,17 @@ defmodule ShinTest.OIDCTest do
     end)
   end
 
-  defp mock_jwks_uri(status) do
+  defp mock_jwks_uri(
+         status,
+         body \\ %{
+           "keys" => [
+             %{
+               "alg" => "RS256",
+               "e" => "AQAB"
+             }
+           ]
+         }
+       ) do
     expect(@http_client, :get, fn
       "https://foo-corp-sandbox.idp-example.com/oauth2/v1/keys",
       [{"Content-Type", "application/json"}, {"Accept", "application/json"}],
@@ -152,15 +181,7 @@ defmodule ShinTest.OIDCTest do
           :reachable ->
             {:ok,
              %HTTPoison.Response{
-               body:
-                 Poison.encode!(%{
-                   "keys" => [
-                     %{
-                       "alg" => "RS256",
-                       "e" => "AQAB"
-                     }
-                   ]
-                 }),
+               body: Poison.encode!(body),
                status_code: 200
              }}
 

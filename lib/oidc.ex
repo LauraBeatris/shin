@@ -37,14 +37,16 @@ defmodule ShinAuth.OIDC do
         {:error,
          %Error{
            tag: :malformed_discovery_endpoint,
-           message: "Discovery endpoint has no URI scheme"
+           message: "Discovery endpoint has no URI scheme.",
+           endpoint: discovery_endpoint
          }}
 
       %URI{host: nil} ->
         {:error,
          %Error{
            tag: :malformed_discovery_endpoint,
-           message: "Discovery endpoint has no URI host"
+           message: "Discovery endpoint has no URI host.",
+           endpoint: discovery_endpoint
          }}
 
       _ ->
@@ -86,7 +88,11 @@ defmodule ShinAuth.OIDC do
        when is_nil(issuer) or not is_binary(issuer),
        do:
          {:error,
-          %Error{tag: :missing_issuer_attribute, message: "'issuer' attribute is missing"}}
+          %Error{
+            tag: :missing_issuer_attribute,
+            message:
+              "'issuer' attribute is missing. Ensure the OIDC provider supports the 'issuer' attribute."
+          }}
 
   defp validate_issuer_attribute({:error, _} = error), do: error
 end

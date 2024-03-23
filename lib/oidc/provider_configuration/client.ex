@@ -24,12 +24,21 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
      )}
   end
 
+  defp handle_discovery_metadata({:ok, %HTTPoison.Response{body: _, status_code: status_code}}),
+    do:
+      {:error,
+       %Error{
+         tag: :discovery_endpoint_unreachable,
+         message: "Discovery endpoint is unreachable. Received status code: #{status_code}."
+       }}
+
   defp handle_discovery_metadata(_),
     do:
       {:error,
        %Error{
          tag: :discovery_endpoint_unreachable,
-         message: "Discovery endpoint is unreachable"
+         message:
+           "Discovery endpoint is unreachable. Verify if the endpoint is structured correctly."
        }}
 
   def fetch_authorization_endpoint(
@@ -50,7 +59,8 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
       {:error,
        %Error{
          tag: :authorization_endpoint_unreachable,
-         message: "Authorization endpoint is unreachable"
+         message:
+           "'authorization_code' is unreachable. Verify if the endpoint is structured correctly."
        }}
 
     case response do
@@ -86,7 +96,8 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
       {:error,
        %Error{
          tag: :token_endpoint_unreachable,
-         message: "Token endpoint is unreachable"
+         message:
+           "'token_endpoint' is unreachable. Verify if the endpoint is structured correctly."
        }}
 
     case response do
@@ -120,16 +131,26 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
 
     case response do
       {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
-        case is_valid_jwk_response?(Poison.decode!(body)) do
-          true -> {:ok, metadata}
-          false -> {:error, %Error{tag: :invalid_jwks_response, message: "Invalid JWKS response"}}
+        data = Poison.decode!(body)
+
+        case is_valid_jwk_response?(data) do
+          true ->
+            {:ok, metadata}
+
+          false ->
+            {:error,
+             %Error{
+               tag: :malformed_jwks_uri_response,
+               message: "JWKS URI response is malformed.",
+               data: data
+             }}
         end
 
       _ ->
         {:error,
          %Error{
            tag: :jwks_uri_unreachable,
-           message: "JWKS URI is unreachable"
+           message: "'jwks_uri' is unreachable. Verify if the endpoint is structured correctly."
          }}
     end
   end
