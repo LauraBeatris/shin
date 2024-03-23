@@ -62,5 +62,36 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
     end
   end
 
+  def fetch_jwks_uri({:error, _} = error),
+    do: error
+
+  def fetch_jwks_uri(
+        {:ok, %Metadata{jwks_uri: jwks_uri} = metadata},
+        config \\ default_config()
+      )
+      when is_binary(jwks_uri) do
+    http_client = Keyword.get(config, :http_client)
+
+    response =
+      jwks_uri
+      |> http_client.get(
+        [{"Content-Type", "application/json"}, {"Accept", "application/json"}],
+        timeout: 5000
+      )
+
+    case response do
+      # TODO - Validate JWKS body
+      {:ok, %HTTPoison.Response{body: _body, status_code: 200}} ->
+        {:ok, metadata}
+
+      _ ->
+        {:error,
+         %Error{
+           tag: :jwks_uri_unreachable,
+           message: "JWKS URI is unreachable"
+         }}
+    end
+  end
+
   defp default_config(), do: Application.get_env(:shin_auth, :provider_configuration_fetcher)
 end

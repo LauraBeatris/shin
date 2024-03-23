@@ -40,6 +40,7 @@ defmodule ShinTest.OIDCTest do
     it "returns parsed discovery metadata" do
       mock_discovery_metadata(:reachable)
       mock_authorization_endpoint(:reachable)
+      mock_jwks_uri(:reachable)
 
       {:ok, %Metadata{issuer: "https://foo-corp-sandbox.idp-example.com"}} =
         OIDC.load_provider_configuration(@valid_discovery_endpoint)
@@ -68,6 +69,21 @@ defmodule ShinTest.OIDCTest do
          %Error{
            tag: :missing_issuer_attribute,
            message: "'issuer' attribute is missing"
+         }} =
+          OIDC.load_provider_configuration(@valid_discovery_endpoint)
+      end
+    end
+
+    context "with unreachable jwks_uri" do
+      it "returns error" do
+        mock_discovery_metadata(:reachable)
+        mock_authorization_endpoint(:reachable)
+        mock_jwks_uri(:unreachable)
+
+        {:error,
+         %Error{
+           tag: :jwks_uri_unreachable,
+           message: "JWKS URI is unreachable"
          }} =
           OIDC.load_provider_configuration(@valid_discovery_endpoint)
       end
@@ -101,6 +117,33 @@ defmodule ShinTest.OIDCTest do
           :reachable ->
             {:ok,
              %HTTPoison.Response{body: "Invalid 'client_id' parameter value", status_code: 400}}
+
+          :unreachable ->
+            {:ok, %HTTPoison.Response{body: "", status_code: 500}}
+        end
+    end)
+  end
+
+  defp mock_jwks_uri(status) do
+    expect(@http_client, :get, fn
+      "https://foo-corp-sandbox.idp-example.com/oauth2/v1/keys",
+      [{"Content-Type", "application/json"}, {"Accept", "application/json"}],
+      [timeout: 5000] ->
+        case status do
+          :reachable ->
+            {:ok,
+             %HTTPoison.Response{
+               body:
+                 Poison.encode(%{
+                   keys: [
+                     %{
+                       "alg" => "RS256",
+                       "e" => "AQAB"
+                     }
+                   ]
+                 }),
+               status_code: 200
+             }}
 
           :unreachable ->
             {:ok, %HTTPoison.Response{body: "", status_code: 500}}

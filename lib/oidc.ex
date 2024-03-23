@@ -24,7 +24,6 @@ defmodule ShinAuth.OIDC do
         discovery_endpoint
         |> fetch_discovery_metadata
         |> validate_discovery_metadata
-        |> validate_issuer_attribute
 
       error ->
         error
@@ -65,7 +64,10 @@ defmodule ShinAuth.OIDC do
 
   defp validate_discovery_metadata({:ok, metadata}) do
     validation_result =
-      metadata |> fetch_authorization_endpoint
+      metadata
+      |> fetch_authorization_endpoint
+      |> validate_issuer_attribute
+      |> fetch_jwks_uri
 
     case validation_result do
       {:ok, _} = parsed_metadata -> parsed_metadata
