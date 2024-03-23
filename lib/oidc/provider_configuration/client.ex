@@ -80,9 +80,11 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
       )
 
     case response do
-      # TODO - Validate JWKS body
-      {:ok, %HTTPoison.Response{body: _body, status_code: 200}} ->
-        {:ok, metadata}
+      {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
+        case is_valid_jwk_response?(Poison.decode!(body)) do
+          true -> {:ok, metadata}
+          false -> {:error, %Error{tag: :invalid_jwks_response, message: "Invalid JWKS response"}}
+        end
 
       _ ->
         {:error,
@@ -91,6 +93,20 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
            message: "JWKS URI is unreachable"
          }}
     end
+  end
+
+  defp is_valid_jwk_response?(%{"keys" => keys}) when is_list(keys),
+    do: Enum.all?(keys, &validate_jwk_keys/1)
+
+  defp is_valid_jwk_response?(response) when is_map(response), do: validate_jwk_keys(response)
+
+  defp is_valid_jwk_response?(_), do: false
+
+  defp validate_jwk_keys(map) do
+    Enum.all?(Map.keys(map), fn key ->
+      value = Map.fetch!(map, key)
+      is_binary(value) or (is_list(value) and Enum.all?(value, &is_binary/1))
+    end)
   end
 
   defp default_config(), do: Application.get_env(:shin_auth, :provider_configuration_fetcher)

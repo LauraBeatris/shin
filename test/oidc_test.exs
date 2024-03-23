@@ -74,7 +74,7 @@ defmodule ShinTest.OIDCTest do
       end
     end
 
-    context "with unreachable jwks_uri" do
+    context "with unreachable 'jwks_uri'" do
       it "returns error" do
         mock_discovery_metadata(:reachable)
         mock_authorization_endpoint(:reachable)
@@ -134,8 +134,8 @@ defmodule ShinTest.OIDCTest do
             {:ok,
              %HTTPoison.Response{
                body:
-                 Poison.encode(%{
-                   keys: [
+                 Poison.encode!(%{
+                   "keys" => [
                      %{
                        "alg" => "RS256",
                        "e" => "AQAB"
