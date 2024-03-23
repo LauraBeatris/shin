@@ -40,7 +40,12 @@ defmodule ShinAuth.OIDC.ProviderConfiguration do
       when is_binary(authorization_endpoint) do
     http_client = Keyword.get(config, :http_client)
 
-    response = authorization_endpoint |> http_client.get()
+    response =
+      authorization_endpoint
+      |> http_client.get(
+        [{"Content-Type", "application/json"}, {"Accept", "application/json"}],
+        timeout: 5000
+      )
 
     case response do
       {:ok, %HTTPoison.Response{body: _body, status_code: 400}} ->

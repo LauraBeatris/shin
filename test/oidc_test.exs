@@ -12,31 +12,6 @@ defmodule ShinTest.OIDCTest do
   @valid_discovery_endpoint "https://valid-url/.well-known/openid-configuration"
   @http_client ShinAuth.HTTPClientMock
 
-  def get_json(filename) do
-    Path.join(__DIR__, ["support/", filename <> ".json"])
-    |> File.read!()
-  end
-
-  defp mock_discovery_content(%{
-         with_discovery: with_discovery,
-         with_authorization: with_authorization
-       }) do
-    expect(@http_client, :get, fn
-      @valid_discovery_endpoint when with_discovery ->
-        {:ok, %HTTPoison.Response{body: get_json("valid_discovery_metadata"), status_code: 200}}
-
-      "https://foo-corp-sandbox.idp-example.com/oauth2/v1/authorize" when with_authorization ->
-        {:ok, %HTTPoison.Response{body: "Invalid 'client_id' parameter value", status_code: 400}}
-
-      @valid_discovery_endpoint ->
-        {:error, %HTTPoison.Response{body: "", status_code: 500}}
-
-      "https://foo-corp-sandbox.idp-example.com/oauth2/v1/authorize" ->
-        {:error,
-         %HTTPoison.Response{body: "Authorization endpoint unreachable", status_code: 500}}
-    end)
-  end
-
   describe "with malformed discovery endpoint" do
     it "returns error" do
       {:error,
@@ -51,10 +26,7 @@ defmodule ShinTest.OIDCTest do
 
   describe "when discovery endpoint is unreachable" do
     it "returns error" do
-      mock_discovery_content(%{
-        with_discovery: false,
-        with_authorization: false
-      })
+      mock_discovery_metadata(:unreachable)
 
       {:error,
        %Error{
@@ -68,10 +40,8 @@ defmodule ShinTest.OIDCTest do
 
   describe "when discovery endpoint is reachable" do
     it "returns parsed discovery metadata" do
-      mock_discovery_content(%{
-        with_discovery: true,
-        with_authorization: true
-      })
+      mock_discovery_metadata(:reachable)
+      mock_authorization_endpoint(:reachable)
 
       {:ok, %Metadata{issuer: "https://foo-corp-sandbox.idp-example.com"}} =
         OIDC.load_provider_configuration(@valid_discovery_endpoint)
@@ -79,14 +49,54 @@ defmodule ShinTest.OIDCTest do
 
     context "with unreachable authorization endpoint" do
       it "returns error" do
-        mock_discovery_content(%{
-          with_discovery: true,
-          with_authorization: false
-        })
+        mock_discovery_metadata(:reachable)
+        mock_authorization_endpoint(:unreachable)
 
-        {:error, _} =
+        {:error,
+         %Error{
+           tag: :authorization_endpoint_unreachable,
+           severity: :error,
+           message: "Authorization endpoint is unreachable"
+         }} =
           OIDC.load_provider_configuration(@valid_discovery_endpoint)
       end
     end
+  end
+
+  def get_json(filename) do
+    Path.join(__DIR__, ["support/", filename <> ".json"])
+    |> File.read!()
+  end
+
+  defp mock_discovery_metadata(:reachable) do
+    expect(@http_client, :get, fn
+      @valid_discovery_endpoint ->
+        {:ok, %HTTPoison.Response{body: get_json("valid_discovery_metadata"), status_code: 200}}
+    end)
+  end
+
+  defp mock_discovery_metadata(:unreachable) do
+    expect(@http_client, :get, fn
+      @valid_discovery_endpoint ->
+        {:ok, %HTTPoison.Response{body: "", status_code: 500}}
+    end)
+  end
+
+  defp mock_authorization_endpoint(:reachable) do
+    expect(@http_client, :get, fn
+      "https://foo-corp-sandbox.idp-example.com/oauth2/v1/authorize",
+      [{"Content-Type", "application/json"}, {"Accept", "application/json"}],
+      [timeout: 5000] ->
+        {:ok, %HTTPoison.Response{body: "Invalid 'client_id' parameter value", status_code: 400}}
+    end)
+  end
+
+  defp mock_authorization_endpoint(:unreachable) do
+    expect(@http_client, :get, fn
+      "https://foo-corp-sandbox.idp-example.com/oauth2/v1/authorize",
+      [{"Content-Type", "application/json"}, {"Accept", "application/json"}],
+      [timeout: 5000] ->
+        {:ok, %HTTPoison.Response{body: "", status_code: 500}}
+    end)
   end
 end

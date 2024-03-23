@@ -32,7 +32,7 @@ defmodule ShinAuth.OIDC do
       metadata |> fetch_authorization_endpoint
 
     case validation_result do
-      {:error, _} = error -> error
+      {:error, error} -> error
       {:ok, _} = parsed_metadata -> parsed_metadata
     end
   end
