@@ -53,6 +53,7 @@ defmodule Shin.MixProject do
       {:ex_doc, "~> 0.31", only: :dev, runtime: false},
       {:ex_spec, "~> 2.0", only: :test},
       {:mox, "~> 1.0", only: :test},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:httpoison, "~> 2.0"},
       {:poison, "~> 5.0"}
     ]
