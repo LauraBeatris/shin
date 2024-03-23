@@ -1,8 +1,8 @@
 defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
   @moduledoc false
 
-  alias ShinAuth.OIDC.ProviderConfiguration.Metadata
   alias ShinAuth.OIDC.ProviderConfiguration.Error
+  alias ShinAuth.OIDC.ProviderConfiguration.Metadata
 
   def fetch_discovery_metadata(discovery_endpoint, config \\ default_config()) do
     http_client = Keyword.get(config, :http_client)
@@ -135,7 +135,7 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
       {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
         data = Poison.decode!(body)
 
-        case is_valid_jwk_response?(data) do
+        case valid_jwk_response?(data) do
           true ->
             {:ok, metadata}
 
@@ -157,12 +157,12 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
     end
   end
 
-  defp is_valid_jwk_response?(%{"keys" => keys}) when is_list(keys),
+  defp valid_jwk_response?(%{"keys" => keys}) when is_list(keys),
     do: Enum.all?(keys, &validate_jwk_keys/1)
 
-  defp is_valid_jwk_response?(response) when is_map(response), do: validate_jwk_keys(response)
+  defp valid_jwk_response?(response) when is_map(response), do: validate_jwk_keys(response)
 
-  defp is_valid_jwk_response?(_), do: false
+  defp valid_jwk_response?(_), do: false
 
   defp validate_jwk_keys(map) do
     Enum.all?(Map.keys(map), fn key ->
@@ -171,5 +171,5 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
     end)
   end
 
-  defp default_config(), do: Application.get_env(:shin_auth, :provider_configuration_fetcher)
+  defp default_config, do: Application.get_env(:shin_auth, :provider_configuration_fetcher)
 end
