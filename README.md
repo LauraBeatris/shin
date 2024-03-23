@@ -48,7 +48,7 @@ Here's a list of error tags, descriptions and attributes use cases:
 
 Work in progress. Those are the features ordered by priority: 
 
-- [ ] OIDC discovery endpoint validator 
+- [X] OIDC discovery endpoint validator 
 - [ ] SAML response validator
 
 Infra:
