@@ -1,4 +1,6 @@
 defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
+  @moduledoc false
+
   alias ShinAuth.OIDC.ProviderConfiguration.Metadata
   alias ShinAuth.OIDC.ProviderConfiguration.Error
 
