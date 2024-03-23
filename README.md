@@ -21,16 +21,9 @@ def deps do
 end
 ```
 
-## Roadmap 
-
-Work in progress. Those are the features ordered by priority: 
-
-- [X] OIDC discovery endpoint validator 
-- [ ] SAML response validator
-
 ## Utilities per protocol 
 
-### OpenID Connect 
+### OpenID Connect (OIDC)
 
 #### `load_provider_configuration` 
 
@@ -51,7 +44,7 @@ iex(1)> ShinAuth.OIDC.load_provider_configuration("https://invalid-discovery/.we
 {:error, %ShinAuth.OIDC.ProviderConfiguration.Error{}}
 ```
 
-Here's a list of error tags, descriptions and attributes use cases:
+Here's a list of error per tags:
 
 | Tags                                | Reason                                                                 |
 |------------------------------------|------------------------------------------------------------------------|
@@ -61,3 +54,13 @@ Here's a list of error tags, descriptions and attributes use cases:
 | `jwks_uri_unreachable` or `malformed_jwks_uri_response`       | `jwks_uri` is either unreachable via HTTP request or the response is malformed |
 | `missing_issuer_attribute`         | `issuer` attribute is missing from the provider's metadata |
 
+
+### Security Assertion Markup Language (SAML) 
+
+### `decode_saml_response`
+
+Work in progress.
+
+### `decode_saml_request`
+
+Work in progress.
