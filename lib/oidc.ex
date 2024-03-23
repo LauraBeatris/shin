@@ -5,8 +5,8 @@ defmodule ShinAuth.OIDC do
 
   import ShinAuth.OIDC.ProviderConfiguration.Client
 
-  alias ShinAuth.OIDC.ProviderConfiguration.Metadata
   alias ShinAuth.OIDC.ProviderConfiguration.Error
+  alias ShinAuth.OIDC.ProviderConfiguration.Metadata
 
   @discovery_endpoint_path ".well-known/openid-configuration"
 

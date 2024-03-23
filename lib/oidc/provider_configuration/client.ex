@@ -1,8 +1,8 @@
 defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
   @moduledoc false
 
-  alias ShinAuth.OIDC.ProviderConfiguration.Metadata
   alias ShinAuth.OIDC.ProviderConfiguration.Error
+  alias ShinAuth.OIDC.ProviderConfiguration.Metadata
 
   def fetch_discovery_metadata(discovery_endpoint, config \\ default_config()) do
     http_client = Keyword.get(config, :http_client)
@@ -171,5 +171,5 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
     end)
   end
 
-  defp default_config(), do: Application.get_env(:shin_auth, :provider_configuration_fetcher)
+  defp default_config, do: Application.get_env(:shin_auth, :provider_configuration_fetcher)
 end

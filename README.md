@@ -9,7 +9,24 @@
 
 This package aims to provide lightweight utilities that can be used to ensure that primitives are well validated and trusted for usage by auth providers. 
 
-Documentation: https://hexdocs.pm/shin_auth
+## Getting started 
+
+The package can be installed by adding `shin_auth` to your list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:shin_auth, "~> 0.1.0"}
+  ]
+end
+```
+
+## Roadmap 
+
+Work in progress. Those are the features ordered by priority: 
+
+- [X] OIDC discovery endpoint validator 
+- [ ] SAML response validator
 
 ## Utilities per protocol 
 
@@ -44,25 +61,3 @@ Here's a list of error tags, descriptions and attributes use cases:
 | `jwks_uri_unreachable` or `malformed_jwks_uri_response`       | `jwks_uri` is either unreachable via HTTP request or the response is malformed |
 | `missing_issuer_attribute`         | `issuer` attribute is missing from the provider's metadata |
 
-## Roadmap 
-
-Work in progress. Those are the features ordered by priority: 
-
-- [X] OIDC discovery endpoint validator 
-- [ ] SAML response validator
-
-Infra:
-
-- [ ] Configure CI for tests 
-
-## Getting started 
-
-The package can be installed by adding `shin_auth` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:shin_auth, "~> 0.1.0"}
-  ]
-end
-```
