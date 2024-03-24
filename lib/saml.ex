@@ -5,16 +5,25 @@ defmodule ShinAuth.SAML do
 
   alias ShinAuth.SAML.Request
 
+  @spec decode_saml_request(discovery_endpoint :: :uri_string.uri_string()) ::
+          {:ok, any()}
+          | {:error, Request.Error.t()}
+
   def decode_saml_request(""), do: {:error, "Empty SAML request"}
 
   def decode_saml_request(saml_request) do
+    error = %Request.Error{
+      tag: :malformed_saml_request,
+      message: "Invalid SAML request"
+    }
+
     if is_valid_xml?(saml_request) do
       case DataSchema.to_struct(saml_request, Request) do
         {:ok, parsed_saml_request} -> {:ok, parsed_saml_request}
         {:error, _} = error -> error
       end
     else
-      {:error, "Invalid SAML request"}
+      {:error, error}
     end
   end
 
