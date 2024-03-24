@@ -32,7 +32,7 @@ defmodule ShinAuth.SAML do
     if valid_xml?(saml_request) do
       case DataSchema.to_struct(saml_request, Request) do
         {:ok, parsed_saml_request} -> {:ok, parsed_saml_request}
-        {:error, _} = error -> error
+        _ -> {:error, error}
       end
     else
       {:error, error}
@@ -63,7 +63,7 @@ defmodule ShinAuth.SAML do
     if valid_xml?(saml_response) do
       case DataSchema.to_struct(saml_response, Response) do
         {:ok, parsed_saml_response} -> {:ok, parsed_saml_response}
-        {:error, _} = error -> error
+        _ -> {:error, error}
       end
     else
       {:error, error}

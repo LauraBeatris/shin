@@ -59,19 +59,64 @@ Here's a list of error per tags:
 
 ### `decode_saml_response`
 
-Parsed a given SAML response to a struct: 
+Parsed a given SAML response to a struct with attributes and values: 
 
 ```ex
 iex(1)> ShinAuth.SAML.decode_saml_response(valid_saml_response)
-{:ok, %ShinAuth.SAML.Response{}}
+
+{:ok, %ShinAuth.SAML.Response{
+   common: %ShinAuth.SAML.Response.Common{
+     id: "_123",
+     version: "2.0",
+     destination: "https://api.example.com/sso/saml/acs/123",
+     issuer: "https://example.com/1234/issuer/1234",
+     issue_instant: "2024-03-23T20:56:56.768Z"
+   },
+   status: %ShinAuth.SAML.Response.Status{
+     status: :success,
+     status_code: "urn:oasis:names:tc:SAML:2.0:status:Success"
+   },
+   conditions: %ShinAuth.SAML.Response.Conditions{
+     not_before: "2024-03-23T20:56:56.768Z",
+     not_on_or_after: "2024-03-23T21:01:56.768Z"
+   },
+   attributes: [
+     %ShinAuth.SAML.Response.Attribute{
+       name: "id",
+       value: "209bac63df9962e7ec458951607ae2e8ed00445a"
+     },
+     %ShinAuth.SAML.Response.Attribute{
+       name: "email",
+       value: "foo@corp.com"
+     },
+     %ShinAuth.SAML.Response.Attribute{
+       name: "firstName",
+       value: "Laura"
+     },
+     %ShinAuth.SAML.Response.Attribute{
+       name: "lastName",
+       value: "Beatris"
+     },
+     %ShinAuth.SAML.Response.Attribute{name: "groups", value: ""}
+   ]
+ }}
 ```
 
 ### `decode_saml_request`
 
-Parsed a given SAML request to a struct: 
+Parsed a given SAML request to a struct with attributes and values: 
 
 ```ex
 iex(1)> ShinAuth.SAML.decode_saml_request(valid_saml_request)
-{:ok, %ShinAuth.SAML.Request{}}
+
+{:ok, %ShinAuth.SAML.Request{
+   common: %ShinAuth.SAML.Request.Common{
+     id: "_123",
+     version: "2.0",
+     assertion_consumer_service_url: "https://auth.example.com/sso/saml/acs/123",
+     issuer: "https://example.com/123",
+     issue_instant: "2023-09-27T17:20:42.746Z"
+   }
+ }}
 ```
 

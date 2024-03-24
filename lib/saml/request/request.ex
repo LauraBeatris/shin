@@ -8,6 +8,20 @@ defmodule ShinAuth.SAML.Request do
   alias ShinAuth.SAML.Request.Utils
 
   @type t ::
+          {:common, ShinAuth.SAML.Request.Common.t()}
+
+  @data_accessor ShinAuth.SAML.XMLHandler
+  data_schema(has_one: {:common, "/samlp:AuthnRequest", ShinAuth.SAML.Request.Common})
+end
+
+defmodule ShinAuth.SAML.Request.Common do
+  @moduledoc false
+
+  import DataSchema, only: [data_schema: 1]
+
+  alias ShinAuth.SAML.Request.Utils
+
+  @type t ::
           {:id, String.t()}
           | {:version, String.t()}
           | {:assertion_consumer_service_url, String.t()}
@@ -16,19 +30,13 @@ defmodule ShinAuth.SAML.Request do
 
   @data_accessor ShinAuth.SAML.XMLHandler
   data_schema(
-    field: {:id, "/samlp:AuthnRequest/@ID", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
+    field: {:id, "./@ID", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
+    field: {:version, "./@Version", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
     field:
-      {:version, "/samlp:AuthnRequest/@Version", &{:ok, Utils.maybe_to_string(&1)},
-       optional: false},
-    field:
-      {:assertion_consumer_service_url, "/samlp:AuthnRequest/@AssertionConsumerServiceURL",
+      {:assertion_consumer_service_url, "./@AssertionConsumerServiceURL",
        &{:ok, Utils.maybe_to_string(&1)}, optional: false},
-    field:
-      {:issuer, "/samlp:AuthnRequest/saml:Issuer/text()", &{:ok, Utils.maybe_to_string(&1)},
-       optional: false},
-    field:
-      {:issue_instant, "/samlp:AuthnRequest/@IssueInstant", &{:ok, Utils.maybe_to_string(&1)},
-       optional: false}
+    field: {:issuer, "./saml:Issuer/text()", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
+    field: {:issue_instant, "./@IssueInstant", &{:ok, Utils.maybe_to_string(&1)}, optional: false}
   )
 end
 

@@ -46,11 +46,13 @@ defmodule ShinAuth.SAML.ResponseTest do
     it "returns parsed response struct" do
       {:ok,
        %Response{
-         id: "_123",
-         version: "2.0",
-         destination: "https://api.example.com/sso/saml/acs/123",
-         issuer: "https://example.com/1234/issuer/1234",
-         issue_instant: "2024-03-23T20:56:56.768Z"
+         common: %{
+           id: "_123",
+           version: "2.0",
+           destination: "https://api.example.com/sso/saml/acs/123",
+           issuer: "https://example.com/1234/issuer/1234",
+           issue_instant: "2024-03-23T20:56:56.768Z"
+         }
        }} = SAML.decode_saml_response(get_xml("valid_saml_response"))
     end
   end
