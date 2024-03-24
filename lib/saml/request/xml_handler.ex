@@ -1,4 +1,6 @@
 defmodule ShinAuth.SAML.Request.XMLHandler do
+  @moduledoc false
+
   @behaviour DataSchema.DataAccessBehaviour
   import SweetXml, only: [sigil_x: 2]
 

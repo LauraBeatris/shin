@@ -1,4 +1,8 @@
 defmodule ShinAuth.SAML.Request do
+  @moduledoc """
+  Parsed XML struct of a SAML Request
+  """
+
   import DataSchema, only: [data_schema: 1]
 
   alias ShinAuth.SAML.Request.Utils

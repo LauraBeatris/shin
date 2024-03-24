@@ -1,6 +1,8 @@
 defmodule ShinAuth.SAML do
   @moduledoc """
   Security Assertion Markup Language utilities.
+
+  Performs decoding based on the spec: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf
   """
 
   alias ShinAuth.SAML.Request
@@ -17,7 +19,7 @@ defmodule ShinAuth.SAML do
       message: "Invalid SAML request"
     }
 
-    if is_valid_xml?(saml_request) do
+    if valid_xml?(saml_request) do
       case DataSchema.to_struct(saml_request, Request) do
         {:ok, parsed_saml_request} -> {:ok, parsed_saml_request}
         {:error, _} = error -> error
@@ -27,13 +29,11 @@ defmodule ShinAuth.SAML do
     end
   end
 
-  defp is_valid_xml?(xml_string) do
-    try do
-      SweetXml.parse(xml_string, quiet: true)
-      true
-    catch
-      :exit, _ -> false
-      :error, _ -> false
-    end
+  defp valid_xml?(xml_string) do
+    SweetXml.parse(xml_string, quiet: true)
+    true
+  catch
+    :exit, _ -> false
+    :error, _ -> false
   end
 end
