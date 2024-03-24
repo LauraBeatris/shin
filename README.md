@@ -59,8 +59,19 @@ Here's a list of error per tags:
 
 ### `decode_saml_response`
 
-Work in progress.
+Parsed a given SAML response to a struct: 
+
+```ex
+iex(1)> ShinAuth.SAML.decode_saml_response(valid_saml_response)
+{:ok, %ShinAuth.SAML.Response{}}
+```
 
 ### `decode_saml_request`
 
-Work in progress.
+Parsed a given SAML request to a struct: 
+
+```ex
+iex(1)> ShinAuth.SAML.decode_saml_request(valid_saml_request)
+{:ok, %ShinAuth.SAML.Request{}}
+```
+
