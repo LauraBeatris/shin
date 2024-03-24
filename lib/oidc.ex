@@ -1,6 +1,8 @@
 defmodule ShinAuth.OIDC do
   @moduledoc """
   OpenID Connect utilities.
+
+  Performs decoding and validation based on the spec: https://openid.net/specs/openid-connect-discovery-1_0.html
   """
 
   import ShinAuth.OIDC.ProviderConfiguration.Client

@@ -1,4 +1,4 @@
-defmodule ShinTest.OIDCTest do
+defmodule ShinAuth.OIDCTest do
   import Mox
 
   use ExSpec, async: true

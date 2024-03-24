@@ -14,12 +14,18 @@ defmodule ShinAuth.SAML do
           {:ok, Request.t()}
           | {:error, Request.Error.t()}
 
-  def decode_saml_request(""), do: {:error, "Empty SAML request"}
+  def decode_saml_request(""),
+    do:
+      {:error,
+       %Request.Error{
+         tag: :malformed_saml_request,
+         message: "Verify if the SAML request is structured correctly by the Service Provider."
+       }}
 
   def decode_saml_request(saml_request) do
     error = %Request.Error{
       tag: :malformed_saml_request,
-      message: "Invalid SAML request"
+      message: "Verify if the SAML request is structured correctly by the Service Provider."
     }
 
     if valid_xml?(saml_request) do

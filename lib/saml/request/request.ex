@@ -24,8 +24,8 @@ defmodule ShinAuth.SAML.Request do
       {:assertion_consumer_service_url, "/samlp:AuthnRequest/@AssertionConsumerServiceURL",
        &{:ok, Utils.maybe_to_string(&1)}, optional: false},
     field:
-      {:issuer, "/samlp:AuthnRequest/saml:Issuer/text()",
-       &{:ok, Utils.maybe_to_string(&1) |> String.trim()}, optional: false},
+      {:issuer, "/samlp:AuthnRequest/saml:Issuer/text()", &{:ok, Utils.maybe_to_string(&1)},
+       optional: false},
     field:
       {:issue_instant, "/samlp:AuthnRequest/@IssueInstant", &{:ok, Utils.maybe_to_string(&1)},
        optional: false}
@@ -37,5 +37,5 @@ defmodule ShinAuth.SAML.Request.Utils do
 
   def maybe_to_string(""), do: nil
   def maybe_to_string(nil), do: nil
-  def maybe_to_string(value), do: to_string(value)
+  def maybe_to_string(value), do: to_string(value) |> String.trim()
 end
