@@ -2,13 +2,16 @@ defmodule ShinAuth.SAML do
   @moduledoc """
   Security Assertion Markup Language utilities.
 
-  Performs decoding based on the spec: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf
+  Performs decoding and validation based on the spec: https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf
   """
 
   alias ShinAuth.SAML.Request
 
+  @doc """
+  Performs decoding on a given SAML request XML document
+  """
   @spec decode_saml_request(discovery_endpoint :: :uri_string.uri_string()) ::
-          {:ok, any()}
+          {:ok, Request.t()}
           | {:error, Request.Error.t()}
 
   def decode_saml_request(""), do: {:error, "Empty SAML request"}

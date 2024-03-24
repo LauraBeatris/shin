@@ -7,11 +7,22 @@ defmodule ShinAuth.SAML.Request do
 
   alias ShinAuth.SAML.Request.Utils
 
+  @type t ::
+          {:id, String.t()}
+          | {:version, String.t()}
+          | {:assertion_consumer_service_url, String.t()}
+          | {:issuer, String.t()}
+          | {:issue_instant, String.t()}
+
   @data_accessor ShinAuth.SAML.Request.XMLHandler
   data_schema(
+    field: {:id, "/samlp:AuthnRequest/@ID", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
     field:
       {:version, "/samlp:AuthnRequest/@Version", &{:ok, Utils.maybe_to_string(&1)},
        optional: false},
+    field:
+      {:assertion_consumer_service_url, "/samlp:AuthnRequest/@AssertionConsumerServiceURL",
+       &{:ok, Utils.maybe_to_string(&1)}, optional: false},
     field:
       {:issuer, "/samlp:AuthnRequest/saml:Issuer/text()",
        &{:ok, Utils.maybe_to_string(&1) |> String.trim()}, optional: false},
