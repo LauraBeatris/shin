@@ -62,7 +62,7 @@ Here's a list of error per tags:
 Parsed a given SAML response to a struct with attributes and values: 
 
 ```ex
-iex(1)> ShinAuth.SAML.decode_saml_response(valid_saml_response)
+iex(1)> ShinAuth.SAML.decode_saml_response(saml_response_xml)
 
 {:ok, %ShinAuth.SAML.Response{
    common: %ShinAuth.SAML.Response.Common{
@@ -107,7 +107,7 @@ iex(1)> ShinAuth.SAML.decode_saml_response(valid_saml_response)
 Parsed a given SAML request to a struct with attributes and values: 
 
 ```ex
-iex(1)> ShinAuth.SAML.decode_saml_request(valid_saml_request)
+iex(1)> ShinAuth.SAML.decode_saml_request(saml_request_xml)
 
 {:ok, %ShinAuth.SAML.Request{
    common: %ShinAuth.SAML.Request.Common{

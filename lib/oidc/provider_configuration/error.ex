@@ -1,4 +1,8 @@
 defmodule ShinAuth.OIDC.ProviderConfiguration.Error do
+  @moduledoc """
+  Defines the possible errors from decoding provider configuration
+  """
+
   @type t :: %__MODULE__{
           tag:
             :malformed_discovery_endpoint

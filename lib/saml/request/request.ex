@@ -15,7 +15,9 @@ defmodule ShinAuth.SAML.Request do
 end
 
 defmodule ShinAuth.SAML.Request.Common do
-  @moduledoc false
+  @moduledoc """
+  Defines the common attributes from `samlp:AuthnRequest`
+  """
 
   import DataSchema, only: [data_schema: 1]
 

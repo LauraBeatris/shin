@@ -25,7 +25,9 @@ defmodule ShinAuth.SAML.Response do
 end
 
 defmodule ShinAuth.SAML.Response.Common do
-  @moduledoc false
+  @moduledoc """
+  Defines the common attributes from `saml2p:Response`
+  """
 
   @type t ::
           {:id, String.t()}
@@ -50,7 +52,9 @@ defmodule ShinAuth.SAML.Response.Common do
 end
 
 defmodule ShinAuth.SAML.Response.Conditions do
-  @moduledoc false
+  @moduledoc """
+  Defines the attributes and values from `saml2:Conditions`
+  """
 
   @type t ::
           {:not_before, String.t()}
@@ -69,7 +73,9 @@ defmodule ShinAuth.SAML.Response.Conditions do
 end
 
 defmodule ShinAuth.SAML.Response.Status do
-  @moduledoc false
+  @moduledoc """
+  Defines the attributes and values from `saml2p:Status`
+  """
 
   @type t ::
           {:status, :failure, :successful}
@@ -91,7 +97,9 @@ defmodule ShinAuth.SAML.Response.Status do
 end
 
 defmodule ShinAuth.SAML.Response.Attribute do
-  @moduledoc false
+  @moduledoc """
+  Defines the attributes and values from `saml2:AttributeStatement`
+  """
 
   @type t ::
           {:name, String.t()}
