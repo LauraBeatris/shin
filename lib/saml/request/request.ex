@@ -1,6 +1,6 @@
 defmodule ShinAuth.SAML.Request do
   @moduledoc """
-  Parsed XML struct of a SAML Request
+  Parsed XML struct of a SAML request
   """
 
   import DataSchema, only: [data_schema: 1]
@@ -14,7 +14,7 @@ defmodule ShinAuth.SAML.Request do
           | {:issuer, String.t()}
           | {:issue_instant, String.t()}
 
-  @data_accessor ShinAuth.SAML.Request.XMLHandler
+  @data_accessor ShinAuth.SAML.XMLHandler
   data_schema(
     field: {:id, "/samlp:AuthnRequest/@ID", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
     field:

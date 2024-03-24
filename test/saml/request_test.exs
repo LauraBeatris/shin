@@ -28,33 +28,25 @@ defmodule ShinAuth.SAML.RequestTest do
       end
     end
 
-    context "when missing saml request required element" do
-      saml_request_mock = """
-      <?xml version="1.0"?>
-      <samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="_123" Version="2.0" IssueInstant="2023-09-27T17:20:42.746Z" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Destination="https://accounts.google.com/o/saml2/idp?idpid=C03gu405z" AssertionConsumerServiceURL="https://auth.example.com/sso/saml/acs/123">
-      <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" AllowCreate="true"/>
-      </samlp:AuthnRequest>
-      """
+    context "when missing required element" do
+      it "returns error" do
+        saml_request_mock = """
+        <?xml version="1.0"?>
+        <samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="_123" Version="2.0" IssueInstant="2023-09-27T17:20:42.746Z" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Destination="https://accounts.google.com/o/saml2/idp?idpid=C03gu405z" AssertionConsumerServiceURL="https://auth.example.com/sso/saml/acs/123">
+        <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" AllowCreate="true"/>
+        </samlp:AuthnRequest>
+        """
 
-      {:error,
-       %DataSchema.Errors{
-         errors: [issuer: "Field was required but value supplied is considered empty"]
-       }} = SAML.decode_saml_request(saml_request_mock)
+        {:error,
+         %DataSchema.Errors{
+           errors: [issuer: "Field was required but value supplied is considered empty"]
+         }} = SAML.decode_saml_request(saml_request_mock)
+      end
     end
   end
 
   describe "with valid saml request" do
-    context "returns parsed request struct" do
-      saml_request_mock = """
-      <?xml version="1.0"?>
-      <samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="_123" Version="2.0" IssueInstant="2023-09-27T17:20:42.746Z" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Destination="https://accounts.google.com/o/saml2/idp?idpid=C03gu405z" AssertionConsumerServiceURL="https://auth.example.com/sso/saml/acs/123">
-      <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
-        https://example.com/123
-      </saml:Issuer>
-      <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" AllowCreate="true"/>
-      </samlp:AuthnRequest>
-      """
-
+    it "returns parsed request struct" do
       {:ok,
        %Request{
          id: "_123",
@@ -62,7 +54,12 @@ defmodule ShinAuth.SAML.RequestTest do
          issue_instant: "2023-09-27T17:20:42.746Z",
          issuer: "https://example.com/123",
          assertion_consumer_service_url: "https://auth.example.com/sso/saml/acs/123"
-       }} = SAML.decode_saml_request(saml_request_mock)
+       }} = SAML.decode_saml_request(get_xml("valid_saml_request"))
     end
+  end
+
+  defp get_xml(filename) do
+    Path.join([__DIR__, "../support/saml", filename <> ".xml"])
+    |> File.read!()
   end
 end

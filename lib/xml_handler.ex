@@ -1,4 +1,4 @@
-defmodule ShinAuth.SAML.Request.XMLHandler do
+defmodule ShinAuth.SAML.XMLHandler do
   @moduledoc false
 
   @behaviour DataSchema.DataAccessBehaviour

@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<saml2p:Response xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    Destination="https://api.example.com/sso/saml/acs/123"
+    ID="_123" IssueInstant="2024-03-23T20:56:56.768Z" Version="2.0">
+    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:SignedInfo>
+            <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+            <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" />
+            <ds:Reference URI="#_01HSPHMC62R1YR6SCZHEJPF8ZK">
+                <ds:Transforms>
+                    <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+                    <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+                </ds:Transforms>
+                <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+                <ds:DigestValue>
+                    /9nJSSrBIaU916FmShj4B6kX5IT7gMltDHWsSQO7d9I=
+                </ds:DigestValue>
+            </ds:Reference>
+        </ds:SignedInfo>
+        <ds:SignatureValue>
+            CnlmBvd0v+d87qOjyiCMlGMr49Wez0UOY439HXgoJmjBt5Q1KhuO8Akdiu6iimulFpeRvN/IU3A57DIJkCp3lfF+iiiN4UPyiq7ArgXmNEI9eOky/7e7S4Eau41yXOh9Di41yGtyEv+lq32RywkkbHldHU52iWpIMP9R8uleqS/1CSpsSVseP80xzPQaGXmjgWlA+KQhW7gQrUAr159C/pmYz2jQMB3pE8t8NW8futNpBz96ZKwlLcn8rjpOXFE8auRU8WbG+pby/+MzL0qatuJZUC7bHY916ovuKEeCW1Xfdy5O/kyQ+1qISO7kVMm1fBwaVpWk9XFPY9MkFTie+w==
+        </ds:SignatureValue>
+    </ds:Signature>
+    <saml2p:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"
+        Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">
+        https://example.com/1234/issuer/1234
+    </saml2p:Issuer>
+    <saml2p:Status>
+        <saml2p:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
+    </saml2p:Status>
+    <saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"
+        ID="_01HSPHMC63GGBQTV59FH81SZQW" IssueInstant="2024-03-23T20:56:56.768Z" Version="2.0">
+        <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+            <ds:SignedInfo>
+                <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+                <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" />
+                <ds:Reference URI="#_01HSPHMC63GGBQTV59FH81SZQW">
+                    <ds:Transforms>
+                        <ds:Transform
+                            Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+                        <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+                    </ds:Transforms>
+                    <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+                    <ds:DigestValue>
+                        oS6NG0rhC7joVaqNmrgCZq+J8ewXWxuR92ICvfUWWJc=
+                    </ds:DigestValue>
+                </ds:Reference>
+            </ds:SignedInfo>
+            <ds:SignatureValue>
+                bRaFe6yjlyZcTZVdD0++pIvmUXYB54RjU7SK2hNth23e4HjjEzm1CkP03DxcEgkHs2msjLuboVgypC84iB+5t4ntyvIfA1Xt7tSOGJZremF3bWa/1s6LigAYAczvnA2wDUG2ASZiD0IJQPj8Zy0uA0979wmquWCnFVcEIH0typ3P3qzHQimvCjbCChPnW3hwVc0v4zNmjHYn5Geb6khXuZ+dwOta9qF1jjRDpcZ1S4jmbURu6D46trb+xsQ1x983KzzWUNwUnUa0KnAgsenyp/NSGOY4lCagnhusYdh3cv6MCkb0VpWmtlVInWArMxKIyqFi8qKGgMh97MPsDR2Jrg==
+            </ds:SignatureValue>
+        </ds:Signature>
+        <saml2:Subject saml2:NameID="[object Object]" saml2:SubjectConfirmation="[object Object]" />
+        <saml2:Conditions NotBefore="2024-03-23T20:56:56.768Z"
+            NotOnOrAfter="2024-03-23T21:01:56.768Z">
+            <saml2:AudienceRestriction>
+                <saml2:Audience>
+                    https://api.example.com/1234
+                </saml2:Audience>
+            </saml2:AudienceRestriction>
+        </saml2:Conditions>
+        <saml2:AuthnStatement AuthnInstant="2024-03-23T20:56:56.768Z"
+            SessionIndex="01HSPHMC65B90ZPRY1TCQFMPMJ">
+            <saml2:AuthnContext>
+                <saml2:AuthnContextClassRef>
+                    urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+                </saml2:AuthnContextClassRef>
+            </saml2:AuthnContext>
+        </saml2:AuthnStatement>
+        <saml2:AttributeStatement>
+            <saml2:Attribute Name="id"
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified">
+                <saml2:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:type="xs:string">
+                    209bac63df9962e7ec458951607ae2e8ed00445a
+                </saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute Name="email"
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified">
+                <saml2:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:type="xs:string">
+                    foo@corp.com
+                </saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute Name="firstName"
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified">
+                <saml2:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:type="xs:string">
+                    Laura
+                </saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute Name="lastName"
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified">
+                <saml2:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:type="xs:string">
+                    Beatris
+                </saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute Name="groups"
+                NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified" />
+        </saml2:AttributeStatement>
+    </saml2:Assertion>
+</saml2p:Response>

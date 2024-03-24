@@ -7,8 +7,6 @@ defmodule ShinAuth.OIDCTest do
   alias ShinAuth.OIDC.ProviderConfiguration.Error
   alias ShinAuth.OIDC.ProviderConfiguration.Metadata
 
-  doctest ShinAuth
-
   @valid_discovery_endpoint "https://valid-url/.well-known/openid-configuration"
   @http_client ShinAuth.HTTPClientMock
 
@@ -129,7 +127,7 @@ defmodule ShinAuth.OIDCTest do
   end
 
   defp get_json(filename) do
-    Path.join(__DIR__, ["support/", filename <> ".json"])
+    Path.join(__DIR__, ["support/oidc/", filename <> ".json"])
     |> File.read!()
   end
 
