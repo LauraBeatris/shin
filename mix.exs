@@ -56,7 +56,8 @@ defmodule Shin.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:httpoison, "~> 2.0"},
       {:poison, "~> 5.0"},
-      {:saxy, "~> 1.5"}
+      {:data_schema, "~> 0.5.0"},
+      {:sweet_xml, "~> 0.7.4"}
     ]
   end
 end
