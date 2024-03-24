@@ -5,25 +5,12 @@ defmodule ShinAuth.SAML do
 
   alias ShinAuth.SAML.Request
 
-  #   XML binary =>
-  # Saxy (to create a SimpleForm DOM) =>
-  #   Query that DOM with DataSchema =>
-  #     Struct
+  def decode_saml_request(saml_request) do
+    parsed_saml_request = DataSchema.to_struct(saml_request, Request)
 
-  def decode_saml_request do
-    source_data = """
-    <Blog date="2021-11-11" time="14:00:00">
-      <Content>This is a blog post</Content>
-      <Comments>
-        <Comment>This is a comment</Comment>
-        <Comment>This is another comment</Comment>
-      </Comments>
-      <Draft>
-        <Content>This is a draft blog post</Content>
-      </Draft>
-    </Blog>
-    """
-
-    DataSchema.to_struct(source_data, Request)
+    case parsed_saml_request do
+      {:error, _} -> {:error, "Invalid SAML request"}
+      _ -> parsed_saml_request
+    end
   end
 end
