@@ -16,7 +16,7 @@ The package can be installed by adding `shin_auth` to your list of dependencies 
 ```elixir
 def deps do
   [
-    {:shin_auth, "~> 0.1.0"}
+    {:shin_auth, "~> 1.0.0"}
   ]
 end
 ```
