@@ -13,20 +13,20 @@ defmodule ShinAuth.SAML.Response do
 
   @data_accessor ShinAuth.SAML.XMLHandler
   data_schema(
-    has_one: {:common, "/saml2p:Response", ShinAuth.SAML.Response.Common},
-    has_one: {:status, "/saml2p:Response/saml2p:Status", ShinAuth.SAML.Response.Status},
+    has_one: {:common, "/samlp:Response", ShinAuth.SAML.Response.Common},
+    has_one: {:status, "/samlp:Response/samlp:Status", ShinAuth.SAML.Response.Status},
     has_one:
-      {:conditions, "/saml2p:Response/saml2:Assertion/saml2:Conditions",
+      {:conditions, "/samlp:Response/saml:Assertion/saml:Conditions",
        ShinAuth.SAML.Response.Conditions},
     has_many:
-      {:attributes, "/saml2p:Response/saml2:Assertion/saml2:AttributeStatement/saml2:Attribute",
+      {:attributes, "/samlp:Response/saml:Assertion/saml:AttributeStatement/saml:Attribute",
        ShinAuth.SAML.Response.Attribute}
   )
 end
 
 defmodule ShinAuth.SAML.Response.Common do
   @moduledoc """
-  Defines the common attributes from `saml2p:Response`
+  Defines the common attributes from `samlp:Response`
   """
 
   @type t ::
@@ -45,15 +45,14 @@ defmodule ShinAuth.SAML.Response.Common do
     field: {:id, "./@ID", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
     field: {:version, "./@Version", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
     field: {:destination, "./@Destination", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
-    field:
-      {:issuer, "./saml2p:Issuer/text()", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
+    field: {:issuer, "./saml:Issuer/text()", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
     field: {:issue_instant, "./@IssueInstant", &{:ok, Utils.maybe_to_string(&1)}, optional: false}
   )
 end
 
 defmodule ShinAuth.SAML.Response.Conditions do
   @moduledoc """
-  Defines the attributes and values from `saml2:Conditions`
+  Defines the attributes and values from `saml:Conditions`
   """
 
   @type t ::
@@ -74,7 +73,7 @@ end
 
 defmodule ShinAuth.SAML.Response.Status do
   @moduledoc """
-  Defines the attributes and values from `saml2p:Status`
+  Defines the attributes and values from `samlp:Status`
   """
 
   @type t ::
@@ -88,17 +87,17 @@ defmodule ShinAuth.SAML.Response.Status do
   @data_accessor ShinAuth.SAML.XMLHandler
   data_schema(
     field:
-      {:status, "./saml2p:StatusCode/@Value", &{:ok, Utils.map_status_code_value(&1)},
+      {:status, "./samlp:StatusCode/@Value", &{:ok, Utils.map_status_code_value(&1)},
        optional: false},
     field:
-      {:status_code, "./saml2p:StatusCode/@Value", &{:ok, Utils.maybe_to_string(&1)},
+      {:status_code, "./samlp:StatusCode/@Value", &{:ok, Utils.maybe_to_string(&1)},
        optional: false}
   )
 end
 
 defmodule ShinAuth.SAML.Response.Attribute do
   @moduledoc """
-  Defines the attributes and values from `saml2:AttributeStatement`
+  Defines the attributes and values from `saml:AttributeStatement`
   """
 
   @type t ::
@@ -113,7 +112,7 @@ defmodule ShinAuth.SAML.Response.Attribute do
   data_schema(
     field: {:name, "./@Name", &{:ok, Utils.maybe_to_string(&1)}, optional: false},
     field:
-      {:value, "./saml2:AttributeValue/text()", &{:ok, to_string(&1) |> String.trim()},
+      {:value, "./saml:AttributeValue/text()", &{:ok, to_string(&1) |> String.trim()},
        optional: true}
   )
 end
