@@ -1,4 +1,4 @@
-defmodule Shin.MixProject do
+defmodule ShinAuth.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/LauraBeatris/shin"
