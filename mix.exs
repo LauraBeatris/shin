@@ -2,7 +2,7 @@ defmodule ShinAuth.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/LauraBeatris/shin"
-  @version "1.0.0"
+  @version "1.1.0"
 
   def project do
     [
