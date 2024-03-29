@@ -47,11 +47,11 @@ defmodule ShinAuth.SAML.ResponseTest do
       {:ok,
        %Response{
          common: %{
-           id: "_123",
+           id: "_8f3b2c4d9e7a8b5c6d21",
            version: "2.0",
-           destination: "https://api.example.com/sso/saml/acs/123",
-           issuer: "https://example.com/1234/issuer/1234",
-           issue_instant: "2024-03-23T20:56:56.768Z"
+           destination: "https://app.shin.com/tester/samlp",
+           issuer: "urn:example.shin.name",
+           issue_instant: "2014-10-14T14:32:17Z"
          }
        }} = SAML.decode_saml_response(get_xml("valid_saml_response"))
     end

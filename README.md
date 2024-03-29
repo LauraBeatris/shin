@@ -13,7 +13,7 @@ This package aims to provide lightweight utilities that can be used to ensure th
 
 The package can be installed by adding `shin_auth` to your list of dependencies in `mix.exs`:
 
-```elixir
+```elixir 
 def deps do
   [
     {:shin_auth, "~> 1.1.0"}
