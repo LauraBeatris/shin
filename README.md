@@ -2,12 +2,21 @@
 
 🍀 A collection of lightweight auth utilities for Elixir. 
 
-
 ## Introduction
 
 **Shin** **信** means "trust", "faith", or "belief" in Japanese. 
 
 This package aims to provide lightweight utilities that can be used to ensure that primitives are well validated and trusted for usage by auth providers. 
+
+## Playground 
+
+A UI playground with usage example per utility can be found at https://shin.howauth.com 
+
+<p align="center">
+  <a href="shin.howauth.com/">
+    <img width="500" src="./.github/images/saml.png">
+  </a>
+</p>
 
 ## Getting started 
 
