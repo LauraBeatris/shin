@@ -5,7 +5,7 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
   alias ShinAuth.OIDC.ProviderConfiguration.Metadata
 
   def fetch_discovery_metadata(discovery_endpoint, config \\ default_config()) do
-    http_client = Keyword.get(config, :http_client)
+    http_client = get_http_client(config)
 
     discovery_endpoint
     |> http_client.get()
@@ -48,7 +48,7 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
         config \\ default_config()
       )
       when is_binary(authorization_endpoint) do
-    http_client = Keyword.get(config, :http_client)
+    http_client = get_http_client(config)
 
     response =
       authorization_endpoint
@@ -84,7 +84,7 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
         config \\ default_config()
       )
       when is_binary(token_endpoint) do
-    http_client = Keyword.get(config, :http_client)
+    http_client = get_http_client(config)
 
     response =
       token_endpoint
@@ -122,7 +122,7 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
         config \\ default_config()
       )
       when is_binary(jwks_uri) do
-    http_client = Keyword.get(config, :http_client)
+    http_client = get_http_client(config)
 
     response =
       jwks_uri
@@ -172,4 +172,8 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
   end
 
   defp default_config, do: Application.get_env(:shin_auth, :provider_configuration_fetcher)
+
+  defp get_http_client(config) do
+    Keyword.get(config, :http_client, HTTPoison)
+  end
 end
