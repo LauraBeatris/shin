@@ -174,6 +174,6 @@ defmodule ShinAuth.OIDC.ProviderConfiguration.Client do
   defp default_config, do: Application.get_env(:shin_auth, :provider_configuration_fetcher)
 
   defp get_http_client(config) do
-    Keyword.get(config, :http_client, HTTPoison)
+    Keyword.get(config || [], :http_client, HTTPoison)
   end
 end
